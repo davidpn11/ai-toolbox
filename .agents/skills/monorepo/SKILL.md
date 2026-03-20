@@ -45,14 +45,14 @@ root/
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "check-types": "turbo run check-types"
+    "check-types": "turbo run check-types",
   },
   "devDependencies": {
     "prettier": "^3.6.2",
     "turbo": "^2.6.0",
     "typescript": "5.9.2",
-    "@types/node": "^24.10.0"
-  }
+    "@types/node": "^24.10.0",
+  },
 }
 ```
 
@@ -77,19 +77,19 @@ root/
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^lint"],
     },
     "check-types": {
-      "dependsOn": ["^check-types"]
+      "dependsOn": ["^check-types"],
     },
     "dev": {
       "cache": false,
-      "persistent": true
-    }
-  }
+      "persistent": true,
+    },
+  },
 }
 ```
 
@@ -105,6 +105,7 @@ root/
 ## 4. Internal Packages
 
 All internal packages follow the same pattern:
+
 - Scoped name: `@my-scope/<package-name>`
 - `"private": true` — they are not published
 - No build step — they export raw config files (JSON or JS)
@@ -128,7 +129,7 @@ packages/typescript-config/
 {
   "name": "@my-scope/typescript-config",
   "version": "0.0.0",
-  "private": true
+  "private": true,
 }
 ```
 
@@ -156,10 +157,10 @@ No `exports` field needed — consumers reference the JSON files directly by pat
     "jsx": "preserve",
     "incremental": true,
     "baseUrl": ".",
-    "paths": { "~/*": ["./src/*"] }
+    "paths": { "~/*": ["./src/*"] },
   },
   "include": ["src"],
-  "exclude": ["node_modules", "dist/", "public/", "coverage/"]
+  "exclude": ["node_modules", "dist/", "public/", "coverage/"],
 }
 ```
 
@@ -171,8 +172,8 @@ No `exports` field needed — consumers reference the JSON files directly by pat
   "extends": "./base.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "incremental": false
-  }
+    "incremental": false,
+  },
 }
 ```
 
@@ -188,8 +189,8 @@ No `exports` field needed — consumers reference the JSON files directly by pat
     "moduleResolution": "Bundler",
     "allowJs": true,
     "jsx": "preserve",
-    "noEmit": true
-  }
+    "noEmit": true,
+  },
 }
 ```
 
@@ -218,14 +219,14 @@ packages/biome-config/
   "exports": {
     "./base": "./base.json",
     "./next-js": "./next.json",
-    "./react-internal": "./react-internal.json"
+    "./react-internal": "./react-internal.json",
   },
   "devDependencies": {
-    "@biomejs/biome": "2.0.6"
+    "@biomejs/biome": "2.0.6",
   },
   "peerDependencies": {
-    "@biomejs/biome": ">=1.9.0"
-  }
+    "@biomejs/biome": ">=1.9.0",
+  },
 }
 ```
 
@@ -242,7 +243,7 @@ Uses `exports` so consumers can write `"extends": ["@my-scope/biome-config/base"
     "indentStyle": "space",
     "indentWidth": 2,
     "lineEnding": "lf",
-    "lineWidth": 80
+    "lineWidth": 80,
   },
   "linter": {
     "enabled": true,
@@ -251,16 +252,16 @@ Uses `exports` so consumers can write `"extends": ["@my-scope/biome-config/base"
       "complexity": {
         "noExtraBooleanCast": "error",
         "noUselessCatch": "error",
-        "noUselessTypeConstraint": "error"
+        "noUselessTypeConstraint": "error",
       },
       "correctness": {
         "noConstAssign": "error",
         "noConstantCondition": "error",
         "noGlobalObjectCalls": "error",
-        "noPrecisionLoss": "error"
-      }
-    }
-  }
+        "noPrecisionLoss": "error",
+      },
+    },
+  },
 }
 ```
 
@@ -278,16 +279,16 @@ Uses `exports` so consumers can write `"extends": ["@my-scope/biome-config/base"
       "correctness": {
         "useExhaustiveDependencies": "warn",
         "useHookAtTopLevel": "error",
-        "noUnusedImports": "error"
+        "noUnusedImports": "error",
       },
       "style": {
-        "useImportType": "error"
+        "useImportType": "error",
       },
       "suspicious": {
-        "noExplicitAny": "warn"
-      }
-    }
-  }
+        "noExplicitAny": "warn",
+      },
+    },
+  },
 }
 ```
 
@@ -316,7 +317,7 @@ packages/eslint-config/
   "exports": {
     "./base": "./base.js",
     "./next-js": "./next.js",
-    "./react-internal": "./react-internal.js"
+    "./react-internal": "./react-internal.js",
   },
   "devDependencies": {
     "@eslint/js": "^9.34.0",
@@ -329,8 +330,8 @@ packages/eslint-config/
     "eslint-plugin-turbo": "^2.5.0",
     "globals": "^16.3.0",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.40.0"
-  }
+    "typescript-eslint": "^8.40.0",
+  },
 }
 ```
 
@@ -394,7 +395,7 @@ apps/web-app/
     "check": "biome check .",
     "check:fix": "biome check --write --unsafe .",
     "preview": "vite preview",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
   },
   "dependencies": {
     "react": "19.2.0",
@@ -402,7 +403,7 @@ apps/web-app/
     "react-router-dom": "^6.28.0",
     "tailwindcss": "4.1.13",
     "zustand": "5.0.8",
-    "zod": "4.1.13"
+    "zod": "4.1.13",
   },
   "devDependencies": {
     "@my-scope/biome-config": "workspace:*",
@@ -414,8 +415,8 @@ apps/web-app/
     "@types/react-dom": "19.2.0",
     "@vitejs/plugin-react": "^4.3.3",
     "typescript": "^5.6.3",
-    "vite": "^5.4.10"
-  }
+    "vite": "^5.4.10",
+  },
 }
 ```
 
@@ -425,7 +426,7 @@ apps/web-app/
 {
   "extends": "@my-scope/typescript-config/react-app.json",
   "include": ["src"],
-  "exclude": ["node_modules", "dist", "build"]
+  "exclude": ["node_modules", "dist", "build"],
 }
 ```
 
@@ -433,7 +434,7 @@ apps/web-app/
 
 ```jsonc
 {
-  "extends": ["@my-scope/biome-config/base"]
+  "extends": ["@my-scope/biome-config/base"],
 }
 ```
 
@@ -480,14 +481,14 @@ apps/api-service/
   "version": "1.0.0",
   "module": "src/index.js",
   "scripts": {
-    "dev": "bun run --watch src/index.ts"
+    "dev": "bun run --watch src/index.ts",
   },
   "dependencies": {
-    "elysia": "1.4.18"
+    "elysia": "1.4.18",
   },
   "devDependencies": {
-    "bun-types": "1.3.3"
-  }
+    "bun-types": "1.3.3",
+  },
 }
 ```
 
@@ -502,8 +503,8 @@ apps/api-service/
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "skipLibCheck": true
-  }
+    "skipLibCheck": true,
+  },
 }
 ```
 
@@ -567,18 +568,18 @@ bun run dev
 
 ## 8. Patterns & Conventions
 
-| Pattern | Detail |
-|---|---|
-| **Package manager** | Bun — used as both runtime (for Elysia backend) and package manager |
-| **Scope** | All packages/apps share a single `@my-scope/` prefix |
-| **Internal linking** | `workspace:*` protocol in `package.json` devDependencies |
-| **Config sharing** | TypeScript, Biome, and ESLint configs are internal packages; apps extend them via `"extends"` |
-| **Task orchestration** | Turborepo with topological `dependsOn: ["^task"]` for build/lint/check-types |
-| **Dev mode** | `turbo run dev` launches all apps concurrently (`persistent: true`, `cache: false`) |
-| **Linting** | Biome for frontend; ESLint config available for apps that need it |
-| **Formatting** | Biome (2-space indent, LF line endings) + Prettier at root |
-| **TypeScript** | Strict mode, `noUncheckedIndexedAccess`, Bundler module resolution, `~/` path alias |
-| **Lockfile** | Single `bun.lock` at the root — covers all workspaces |
+| Pattern                | Detail                                                                                        |
+| ---------------------- | --------------------------------------------------------------------------------------------- |
+| **Package manager**    | Bun — used as both runtime (for Elysia backend) and package manager                           |
+| **Scope**              | All packages/apps share a single `@my-scope/` prefix                                          |
+| **Internal linking**   | `workspace:*` protocol in `package.json` devDependencies                                      |
+| **Config sharing**     | TypeScript, Biome, and ESLint configs are internal packages; apps extend them via `"extends"` |
+| **Task orchestration** | Turborepo with topological `dependsOn: ["^task"]` for build/lint/check-types                  |
+| **Dev mode**           | `turbo run dev` launches all apps concurrently (`persistent: true`, `cache: false`)           |
+| **Linting**            | Biome for frontend; ESLint config available for apps that need it                             |
+| **Formatting**         | Biome (2-space indent, LF line endings) + Prettier at root                                    |
+| **TypeScript**         | Strict mode, `noUncheckedIndexedAccess`, Bundler module resolution, `~/` path alias           |
+| **Lockfile**           | Single `bun.lock` at the root — covers all workspaces                                         |
 
 ---
 

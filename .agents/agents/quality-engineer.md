@@ -2,6 +2,7 @@
 name: quality-engineer
 description: "Testing specialist — writes and maintains Vitest unit tests with React Testing Library, and Playwright e2e tests with Page Object Model. Use for writing tests, fixing failing tests, improving coverage, and setting up test infrastructure."
 tools: "Read, Grep, Glob, Bash, Write, Edit"
+model: claude-sonnet-4-20250514
 ---
 
 <agent>

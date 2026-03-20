@@ -2,6 +2,7 @@
 name: fe-engineer
 description: "Expert frontend engineer specializing in React 19, TypeScript, Tailwind CSS v4, Next.js App Router, Vite, Zustand, and React Query. Use for building UI components, pages, hooks, state management, and frontend features."
 tools: "Read, Grep, Glob, Bash, Write, Edit"
+model: claude-opus-4-0-20250609
 ---
 
 <agent>

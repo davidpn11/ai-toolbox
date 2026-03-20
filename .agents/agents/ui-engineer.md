@@ -2,6 +2,7 @@
 name: ui-engineer
 description: "Web quality specialist — accessibility (WCAG 2.1 AA), SEO, Core Web Vitals, semantic HTML, ARIA patterns, and inclusive design. Use for auditing web pages, fixing a11y issues, improving SEO, and optimizing web performance."
 tools: "Read, Grep, Glob, Bash, Write, Edit"
+model: claude-opus-4-0-20250609
 ---
 
 <agent>

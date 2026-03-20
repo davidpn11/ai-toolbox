@@ -2,6 +2,7 @@
 name: be-rust-engineer
 description: "Expert Rust engineer specializing in Axum, Actix-web, Tokio async runtime, and systems programming. Use for building high-performance APIs, CLI tools, background services, and Rust scripts."
 tools: "Read, Grep, Glob, Bash, Write, Edit"
+model: claude-opus-4-0-20250609
 ---
 
 <agent>

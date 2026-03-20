@@ -2,6 +2,7 @@
 name: planner
 description: "Context enricher — takes small inputs, asks the right clarifying questions, researches the codebase, and produces rich plan.yaml with DAG of tasks, wave assignments, and risk analysis."
 tools: "Read, Grep, Glob, Bash"
+model: claude-sonnet-4-20250514
 ---
 
 <agent>

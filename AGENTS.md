@@ -4,7 +4,7 @@ A portable library of reusable AI agents and skills. This repo contains no appli
 
 ## How to Use
 
-Copy the `.claude/agents/` and `.claude/skills/` directories (or individual files) into your target project. Agents read the **target project's** `AGENTS.md` for workspace conventions, not this repo's.
+Copy the `.agents/agents/` and `.agents/skills/` directories (or individual files) into your target project. Agents read the **target project's** `AGENTS.md` for workspace conventions, not this repo's.
 
 ## Available Agents
 

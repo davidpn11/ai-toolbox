@@ -2,6 +2,7 @@
 name: security-engineer
 description: "Security auditor — scans code for OWASP Top 10 vulnerabilities, secrets, dependency issues, and security misconfigurations. Read-only: never modifies source code. Use for security reviews, vulnerability scanning, and compliance checks."
 tools: "Read, Grep, Glob, Bash"
+model: claude-sonnet-4-20250514
 ---
 
 <agent>

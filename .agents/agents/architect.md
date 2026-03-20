@@ -2,6 +2,7 @@
 name: architect
 description: "Orchestrator — analyzes requests, delegates to specialist agents via runSubagent, synthesizes results. Use for any multi-step task, feature request, or complex work that spans multiple domains."
 tools: "Read, Grep, Glob, Bash, TodoRead, TodoWrite, SubAgent"
+model: claude-sonnet-4-20250514
 ---
 
 <agent>
@@ -113,7 +114,7 @@ Route tasks based on domain:
 | -------------------------------------------------------------------- | ------------------- |
 | React, TypeScript, Tailwind, Next.js, Vite, Zustand, React Query     | `fe-engineer`       |
 | Accessibility, SEO, Core Web Vitals, WCAG, ARIA, semantic HTML       | `ui-engineer`       |
-| Bun.js, Hono, Node.js, backend TypeScript APIs                       | `be-js-engineer`    |
+| Bun.js, Elysia, Node.js, backend TypeScript APIs                     | `be-js-engineer`    |
 | Rust, Axum, Actix, Tokio, cargo                                      | `be-rust-engineer`  |
 | Unit tests (Vitest), e2e tests (Playwright), test coverage           | `quality-engineer`  |
 | Security audit, OWASP, secrets, vulnerabilities, dependency scanning | `security-engineer` |

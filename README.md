@@ -4,7 +4,7 @@ A portable library of reusable AI agents and skills. This repo contains no appli
 
 ## How to Use
 
-Copy the `.claude/agents/` and `.claude/skills/` directories (or individual files) into your target project. Agents read the **target project's** `AGENTS.md` for workspace conventions, not this repo's.
+Copy the `.agents/agents/` and `.agents/skills/` directories (or individual files) into your target project. Agents read the **target project's** `AGENTS.md` for workspace conventions, not this repo's.
 
 ## Available Agents
 
@@ -26,7 +26,7 @@ Reusable knowledge modules shared across agents:
 | Skill | Used By |
 |-------|---------|
 | `react-tailwind` | fe-engineer, ui-engineer |
-| `bun-api` | be-js-engineer |
+| `elysia-api` | be-js-engineer |
 | `playwright-testing` | quality-engineer |
 | `owasp-security` | security-engineer |
 | `monorepo` | fe-engineer, be-js-engineer, architect |
@@ -36,7 +36,7 @@ Reusable knowledge modules shared across agents:
 ### Copy everything
 
 ```bash
-cp -r ai-toolbox/.claude /path/to/your-project/
+cp -r ai-toolbox/.agents /path/to/your-project/
 cp ai-toolbox/AGENTS.md /path/to/your-project/  # optional — adapt for your project
 ```
 
@@ -44,10 +44,10 @@ cp ai-toolbox/AGENTS.md /path/to/your-project/  # optional — adapt for your pr
 
 ```bash
 # Single agent
-cp ai-toolbox/.claude/agents/fe-engineer.md /path/to/your-project/.claude/agents/
+cp ai-toolbox/.agents/agents/fe-engineer.md /path/to/your-project/.agents/agents/
 
 # Single skill
-cp -r ai-toolbox/.claude/skills/react-tailwind /path/to/your-project/.claude/skills/
+cp -r ai-toolbox/.agents/skills/react-tailwind /path/to/your-project/.agents/skills/
 ```
 
 After copying, edit the target project's `AGENTS.md` to declare its own stack, coding standards, and conventions. The agents will read that file at runtime.
@@ -79,7 +79,7 @@ User Request
 ## Structure
 
 ```
-.claude/
+.agents/
 ├── agents/          # 8 specialized agents
 │   ├── architect.md
 │   ├── planner.md
@@ -91,7 +91,7 @@ User Request
 │   └── security-engineer.md
 └── skills/          # Reusable knowledge modules
     ├── react-tailwind/
-    ├── bun-api/
+    ├── elysia-api/
     ├── playwright-testing/
     ├── owasp-security/
     └── monorepo/
