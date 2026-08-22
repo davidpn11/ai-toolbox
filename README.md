@@ -1,10 +1,30 @@
 # AI Toolbox
 
-A portable library of reusable AI agents and skills. This repo contains no application code — it exists solely to store agent definitions and skill modules that can be copied into any project.
+A portable library of reusable AI agents and skills. This repo contains no application code — it exists solely to store agent definitions and skill modules that can be copied — or installed — into any project.
 
 ## How to Use
 
-Copy the `.agents/agents/` and `.agents/skills/` directories (or individual files) into your target project. Agents read the **target project's** `AGENTS.md` for workspace conventions, not this repo's.
+Two install paths, depending on what you're pulling in:
+
+- **Skills** (`.agents/skills/`) — installable with the [`skills` CLI](https://github.com/vercel-labs/skills) (`npx skills add`), which works across 75+ AI coding tools. This includes both the domain-knowledge skills (react-tailwind, elysia-api, ...) and a Skill-format version of every agent persona below, so tools that don't support Claude Code-style subagents still get the same expertise.
+- **Subagents** (`.agents/agents/`) — Claude Code-native subagent definitions (isolated context window, restricted tool access, dedicated model). These aren't part of the Skills ecosystem, so they're copied by hand — see [Copy everything](#copy-everything) below.
+
+Either way, agents/skills read the **target project's** `AGENTS.md` for workspace conventions, not this repo's.
+
+## Install with `npx skills add`
+
+```bash
+# Pull every skill (personas + domain knowledge) into the current project
+npx skills add davidpn11/ai-toolbox --agent claude-code
+
+# Cherry-pick one or more
+npx skills add davidpn11/ai-toolbox --skill fe-engineer --skill react-tailwind --agent claude-code
+
+# See what's available without installing
+npx skills add davidpn11/ai-toolbox --list
+```
+
+Swap `--agent claude-code` for any other supported target (`cursor`, `codex`, `windsurf`, etc.) — the CLI installs into that tool's own skills directory. Omit `--agent` and it will prompt.
 
 ## Available Agents
 
@@ -21,7 +41,22 @@ Copy the `.agents/agents/` and `.agents/skills/` directories (or individual file
 
 ## Skills
 
-Reusable knowledge modules shared across agents:
+`.agents/skills/` — every entry here is `npx skills add`-installable.
+
+**Agent-persona skills** (Skill-format twin of each subagent above, for tools without subagent support):
+
+| Skill | Companion subagent |
+|-------|---------------------|
+| `architect` | `architect` |
+| `planner` | `planner` |
+| `fe-engineer` | `fe-engineer` |
+| `ui-engineer` | `ui-engineer` |
+| `be-js-engineer` | `be-js-engineer` |
+| `be-rust-engineer` | `be-rust-engineer` |
+| `quality-engineer` | `quality-engineer` |
+| `security-engineer` | `security-engineer` |
+
+**Domain-knowledge skills** — reusable reference material, used by the agents above:
 
 | Skill | Used By |
 |-------|---------|
@@ -33,7 +68,11 @@ Reusable knowledge modules shared across agents:
 
 ## Installation
 
-### Copy everything
+### `npx skills add` (recommended for skills)
+
+See [Install with `npx skills add`](#install-with-npx-skills-add) above. This installs from `.agents/skills/` — both the persona skills and the domain-knowledge skills — into the target project's own skills directory, in the format that project's tool expects.
+
+### Copy everything (only way to get native Claude Code subagents)
 
 ```bash
 cp -r ai-toolbox/.agents /path/to/your-project/
@@ -43,14 +82,14 @@ cp ai-toolbox/AGENTS.md /path/to/your-project/  # optional — adapt for your pr
 ### Cherry-pick individual agents or skills
 
 ```bash
-# Single agent
+# Single subagent
 cp ai-toolbox/.agents/agents/fe-engineer.md /path/to/your-project/.agents/agents/
 
-# Single skill
+# Single skill (works for both persona and domain-knowledge skills)
 cp -r ai-toolbox/.agents/skills/react-tailwind /path/to/your-project/.agents/skills/
 ```
 
-After copying, edit the target project's `AGENTS.md` to declare its own stack, coding standards, and conventions. The agents will read that file at runtime.
+After copying or installing, edit the target project's `AGENTS.md` to declare its own stack, coding standards, and conventions. The agents/skills read that file at runtime.
 
 ## Architecture
 
@@ -80,7 +119,7 @@ User Request
 
 ```
 .agents/
-├── agents/          # 8 specialized agents
+├── agents/                # 8 Claude Code subagents (copy-only, not npx-installable)
 │   ├── architect.md
 │   ├── planner.md
 │   ├── fe-engineer.md
@@ -89,13 +128,21 @@ User Request
 │   ├── be-rust-engineer.md
 │   ├── quality-engineer.md
 │   └── security-engineer.md
-└── skills/          # Reusable knowledge modules
-    ├── react-tailwind/
-    ├── elysia-api/
-    ├── playwright-testing/
-    ├── owasp-security/
-    └── monorepo/
-AGENTS.md            # Delegation protocol & agent catalog
+└── skills/                # npx skills add-installable — personas + knowledge
+    ├── architect/         SKILL.md
+    ├── planner/           SKILL.md
+    ├── fe-engineer/       SKILL.md
+    ├── ui-engineer/       SKILL.md
+    ├── be-js-engineer/    SKILL.md
+    ├── be-rust-engineer/  SKILL.md
+    ├── quality-engineer/  SKILL.md
+    ├── security-engineer/ SKILL.md
+    ├── react-tailwind/    SKILL.md
+    ├── elysia-api/        SKILL.md
+    ├── playwright-testing/SKILL.md
+    ├── owasp-security/    SKILL.md
+    └── monorepo/          SKILL.md
+AGENTS.md                  # Delegation protocol & agent catalog
 ```
 
 ## Delegation Protocol
