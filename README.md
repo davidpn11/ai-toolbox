@@ -66,6 +66,24 @@ Swap `--agent claude-code` for any other supported target (`cursor`, `codex`, `w
 | `owasp-security` | security-engineer |
 | `monorepo` | fe-engineer, be-js-engineer, architect |
 
+**Workflow skills** — reusable engineering workflows, independent of the persona agents. Adapted from [mattpocock/skills](https://github.com/mattpocock/skills) and [cursor/plugins](https://github.com/cursor/plugins) (both MIT, see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)); the survey behind them is in [docs/research/](docs/research/skills-survey-mattpocock-cursor-pstack.md).
+
+| Skill | What it does | Invoked by |
+|-------|--------------|------------|
+| `grilling` | Interview the user in rounds until nothing is silently assumed; facts found by the agent, decisions put to the user | user or model |
+| `grill-with-docs` | `grilling` plus `domain-modeling`: the interview writes `CONTEXT.md` and ADRs as it goes | user |
+| `domain-modeling` | Glossary and ADR discipline (`CONTEXT.md`, `docs/adr/`), with the three-gate ADR rule | model |
+| `research` | Background agent, primary sources only, cited Markdown under `docs/research/` with confidence tiers | model |
+| `prototype` | Throwaway code that answers one design question: shareable HTML logic demo, or structurally different UI variants behind `?variant=` | model |
+| `codebase-design` | Deep-module vocabulary (module, interface, seam, adapter, depth, locality), red flags, design-it-twice, rationale template | model |
+| `architecture-review` | Scan for deepening opportunities, visual before/after report, then grill through the chosen candidate | user |
+| `code-review` | Parallel reviewers per axis (Standards, Spec, optional Quality and Blast radius), then lead judgment into Act on / Consider / Noted / Dismissed | model |
+| `resolve-merge-conflicts` | Resolve by intent from commits, PRs, and issues; never `--abort`; checks green before commit | model |
+| `unslop` | Numbered list of AI-writing tells to remove from prose, plus a code-slop section | model |
+| `figma-design` | Figma MCP server workflow in both directions: design to code with Code Connect and tokens, code and prototypes back to the canvas | model |
+
+`code-review` shares its name with Claude Code's built-in `/code-review`. Installing it into a project shadows the built-in one; rename the directory if you want both.
+
 ## Installation
 
 ### `npx skills add` (recommended for skills)
@@ -141,8 +159,21 @@ User Request
     ├── elysia-api/        SKILL.md
     ├── playwright-testing/SKILL.md
     ├── owasp-security/    SKILL.md
-    └── monorepo/          SKILL.md
+    ├── monorepo/          SKILL.md
+    ├── grilling/          SKILL.md
+    ├── grill-with-docs/   SKILL.md
+    ├── domain-modeling/   SKILL.md, CONTEXT-FORMAT.md, ADR-FORMAT.md
+    ├── research/          SKILL.md
+    ├── prototype/         SKILL.md, LOGIC.md, UI.md
+    ├── codebase-design/   SKILL.md, DEEPENING.md, DESIGN-IT-TWICE.md, DESIGN-RED-FLAGS.md, RATIONALE.md
+    ├── architecture-review/ SKILL.md, HTML-REPORT.md
+    ├── code-review/       SKILL.md, references/
+    ├── resolve-merge-conflicts/ SKILL.md
+    ├── unslop/            SKILL.md
+    └── figma-design/      SKILL.md
 AGENTS.md                  # Delegation protocol & agent catalog
+THIRD_PARTY_NOTICES.md     # MIT notices for adapted skills
+docs/research/             # Research notes written by the research skill
 ```
 
 ## Delegation Protocol
