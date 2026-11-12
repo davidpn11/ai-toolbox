@@ -36,7 +36,7 @@ When a change in one repo needs changes in another, install one skill globally, 
 npx skills add davidpn11/ai-toolbox --skill orca-project-setup -g --agent claude-code --agent codex
 ```
 
-Then, in Claude or Codex anywhere, say `/orca-project-setup <repo A> <repo B>`. It creates an Orca folder workspace grouping the repos, installs every skill in this collection into it for both agents, and writes one `AGENTS.md` describing each repo (stack, verify commands, contracts). The repos are not touched. Open the project in Orca and ask for the feature: the `orca-planner` skill plans it, runs each task as an Orca worker (Claude or Codex) in that repo's own worktree, has the diffs reviewed by the other model family, and opens one PR per repo in merge order.
+Then, in Claude or Codex anywhere, say `/orca-project-setup <repo A> <repo B>`. It creates an Orca folder workspace grouping the repos, installs every other skill in this collection into it for both agents (not itself, and not `unslop`, which it expects to be installed globally), and writes one `AGENTS.md` describing each repo (stack, verify commands, contracts). The repos are not touched. Open the project in Orca and ask for the feature: the `orca-planner` skill plans it, runs each task as an Orca worker (Claude or Codex) in that repo's own worktree, has the diffs reviewed by the other model family, and opens one PR per repo in merge order.
 
 | Skill | What it does | Invoked by |
 |-------|--------------|------------|

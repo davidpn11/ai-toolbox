@@ -36,17 +36,24 @@ Ask in a single message, with your guess for each answer:
 
 From inside the project folder (project scope, never `-g`):
 
+Install every ai-toolbox skill **except** two that are already global: `orca-project-setup` (this skill) and `unslop`.
+
 ```bash
-npx skills add davidpn11/ai-toolbox --skill '*' --agent claude-code --agent codex -y
-mkdir -p .claude/agents
-for a in scout runner; do
-  curl -fsSL "https://raw.githubusercontent.com/davidpn11/ai-toolbox/master/.agents/agents/$a.md" -o ".claude/agents/$a.md"
-done
+SRC=$(mktemp -d)
+git clone -q --depth 1 https://github.com/davidpn11/ai-toolbox "$SRC"
+npx skills add davidpn11/ai-toolbox \
+  $(ls -d "$SRC"/.agents/skills/*/*/ | xargs -n1 basename | grep -vxE 'orca-project-setup|unslop' | sed 's/^/--skill /') \
+  --agent claude-code --agent codex -y
+mkdir -p .claude/agents && cp "$SRC"/.agents/agents/{scout,runner}.md .claude/agents/
+rm -rf "$SRC"
 ```
 
-If a flag is rejected, check `npx skills add --help` and adjust; the goal is every ai-toolbox skill, for both agents, in this folder.
+The clone only supplies the skill names and the two agents; the install itself comes from GitHub, so `npx skills update -p` keeps working. If a flag is rejected, check `npx skills add --help` and adjust.
 
-Then check for **name clashes**: `npx skills ls -g`. Claude Code prefers a global skill over a project skill with the same name, so a global `planner`, `architect`, `grilling` or similar would silently replace the project's copy. List any clash and ask whether to remove the global one (`npx skills remove -g <name> -y`). Do not remove anything without a yes.
+Then check the globals with `npx skills ls -g`:
+
+- **`unslop` missing:** the skills expect it globally. Tell the user (`npx skills add cursor/plugins --skill unslop -g`), but do not install it yourself.
+- **Name clashes:** Claude Code prefers a global skill over a project skill with the same name, so a global `planner`, `architect`, `grilling` or similar would silently replace the project's copy. List any clash and ask whether to remove the global one (`npx skills remove -g <name> -y`). Do not remove anything without a yes. `orca-project-setup` and `unslop` are global on purpose and are not clashes.
 
 ## 5. Describe the repos
 
