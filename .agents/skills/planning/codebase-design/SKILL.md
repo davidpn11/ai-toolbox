@@ -1,6 +1,6 @@
 ---
 name: codebase-design
-description: "Shared vocabulary and principles for designing deep modules. Use when the user wants to design or improve a module's interface, find deepening opportunities, decide where a seam goes, make code more testable or AI-navigable, sketch types and signatures before implementing, or when another skill needs the deep-module vocabulary. Also runs an architecture review: scan a codebase for deepening opportunities, report them with before/after diagrams, and grill through the one the user picks."
+description: "Shared vocabulary and principles for designing deep modules. Use when the user wants to design or improve a module's interface, find deepening opportunities, decide where a seam goes, make code more testable or AI-navigable, sketch types and signatures before implementing, or when another skill needs the deep-module vocabulary."
 ---
 
 # Codebase design
@@ -120,11 +120,6 @@ Good interfaces make testing natural:
 - **Deepening a cluster given its dependencies**, see [DEEPENING.md](DEEPENING.md): dependency categories, seam discipline, and replace-don't-layer testing.
 - **Exploring alternative interfaces**, see [DESIGN-IT-TWICE.md](DESIGN-IT-TWICE.md): spin up parallel sub-agents to design the interface several radically different ways, then compare on depth, locality, and seam placement.
 - **Writing up a chosen design** before implementing it, use `RATIONALE.md` from the `doc-templates` skill: a one-page template, usage written before types. Save it to the feature folder as `rationale-<module>.md`.
-
-
-## Review mode
-
-When the user asks for an architecture review, where the codebase hurts, or what to refactor next, follow [REVIEW.md](REVIEW.md) with this skill's vocabulary; it renders its report with [HTML-REPORT.md](HTML-REPORT.md).
 
 ## Attribution
 

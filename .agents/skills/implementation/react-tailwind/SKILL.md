@@ -1,3 +1,8 @@
+---
+name: react-tailwind
+description: "React 19 + Tailwind CSS v4 patterns and conventions. Use when building React components with Tailwind styling, configuring Tailwind v4 themes, using Zustand stores, React Query data fetching, Next.js App Router conventions, or Vite setup."
+---
+
 # React 19 + Tailwind CSS v4
 
 Patterns, conventions, and best practices for building modern React applications with Tailwind CSS v4.

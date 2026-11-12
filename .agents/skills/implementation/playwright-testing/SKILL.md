@@ -1,3 +1,8 @@
+---
+name: playwright-testing
+description: "Playwright e2e testing patterns — project setup, Page Object Model, test fixtures, common assertions, accessibility testing with @axe-core/playwright, visual regression, CI configuration, and debugging. Use when writing or fixing Playwright tests."
+---
+
 # Playwright E2E Testing
 
 Patterns and conventions for writing reliable end-to-end tests with Playwright.

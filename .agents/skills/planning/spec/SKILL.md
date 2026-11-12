@@ -11,15 +11,15 @@ Collapse everything learned so far into one document that a planner can break in
 
 Read every file in the feature folder (see the `doc-templates` skill), `CONTEXT.md`, and the ADRs in the area. Use the conversation's grilling decisions as the highest authority: when a decision contradicts a brief, the decision wins and the spec says so.
 
-If you have not explored the code the feature touches, load the `investigation` skill first, or send a `scout` for a narrow question.
+If you have not explored the code the feature touches, call the Skill tool with "investigation" first, or send a `scout` for a narrow question.
 
 ## 2. Find the gaps before writing
 
-List anything the spec needs that nobody has decided: a missing state, an undecided error behaviour, a requirement with no testing approach. Show the list to the user with a recommended answer for each. Settle small ones in this conversation; for a long list, load the `grilling` skill for one more round. Do not paper over a gap with a guess.
+List anything the spec needs that nobody has decided: a missing state, an undecided error behaviour, a requirement with no testing approach. Show the list to the user with a recommended answer for each. Settle small ones in this conversation; for a long list, call the Skill tool with "grilling" for one more round. Do not paper over a gap with a guess.
 
 ## 3. Choose the test seams
 
-Load the `codebase-design` skill for its vocabulary, then sketch the seams the feature will be tested at. Prefer existing seams; when new ones are needed, put them as high as possible. Fewer is better; one is ideal. Confirm the seams with the user.
+Call the Skill tool with "codebase-design" for its vocabulary, then sketch the seams the feature will be tested at. Prefer existing seams; when new ones are needed, put them as high as possible. Fewer is better; one is ideal. Confirm the seams with the user.
 
 ## 4. Write it
 

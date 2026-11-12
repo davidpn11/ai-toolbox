@@ -9,10 +9,10 @@ One place for the shape of every document, so a research note written by `resear
 
 ## Where documents live
 
-Work on one feature keeps its documents in one **feature folder**, so any session (or subagent) can pick up the work from paths alone. In a hub (a folder whose `AGENTS.md` holds a repo registry) the folder is `features/<feature-slug>/` in the hub, even when the feature touches one repo; anywhere else it is `docs/features/<feature-slug>/`:
+Work on one feature keeps its documents in one **feature folder**, so any session (or subagent) can pick up the work from paths alone:
 
 ```
-features/<feature-slug>/
+docs/features/<feature-slug>/
 ├── research/<topic>.md        research notes (RESEARCH.md)
 ├── investigation-<topic>.md   how the current system works (INVESTIGATION.md)
 ├── spike-<topic>.md           feasibility verdicts (SPIKE.md)
@@ -21,8 +21,7 @@ features/<feature-slug>/
 ├── questionnaire-<who>.md     QUESTIONNAIRE.md
 ├── rationale-<module>.md      RATIONALE.md
 ├── spec.md                    SPEC.md
-├── plan.yaml                  PLAN.md
-└── tasks/<task_id>.md         worker spec files (the delegation skill)
+└── plan.yaml                  PLAN.md
 ```
 
 Project-wide records live outside the feature folder: the glossary in `CONTEXT.md` and decisions in `docs/adr/` (ADR.md). If the target project's `AGENTS.md` or existing docs use other locations, follow those and say so. Create folders lazily, when the first file needs them.
@@ -41,7 +40,7 @@ Standalone work with no feature (a one-off research question) goes to `docs/rese
    Words that claim evidence ("because", "was designed to", "the team decided") need a citation in the same sentence.
 3. **Never leave out what you don't know.** Every research, investigation, spike, and brief ends with a gaps or open-questions section. It is never empty; if the evidence was complete, say why.
 4. **Link, don't restate.** A brief points at the research note that holds the detail; a spec points at the briefs and ADRs. A fact lives in one document.
-5. **Sentence-case headings, no filler.** Before saving, load the `unslop` skill and apply it to the prose.
+5. **Sentence-case headings, no filler.** Before saving, call the Skill tool with "unslop" and apply it to the prose.
 6. **Replace every italic note** in a template with content, or delete the section if it truly does not apply and say why in one line.
 
 ## Templates
@@ -56,7 +55,5 @@ Standalone work with no feature (a one-off research question) goes to `docs/rese
 | [QUESTIONNAIRE.md](QUESTIONNAIRE.md) | `questionnaire` | the recipient, then `grilling` |
 | [ADR.md](ADR.md) | `domain-modeling` | every later session |
 | [RATIONALE.md](RATIONALE.md) | `codebase-design` | `spec`, implementers |
-| [SPEC.md](SPEC.md) | `spec` | `planner`, `branch-review` (Spec axis) |
-| [PLAN.md](PLAN.md) | `planner` | `planner` |
-| [AGENTS-REPO.md](AGENTS-REPO.md) | `onboard-repo` | `planner`, every worker spec |
-| [AGENTS-HUB.md](AGENTS-HUB.md) | the user, `onboard-repo` (registry rows) | `planner` |
+| [SPEC.md](SPEC.md) | `spec` | `planner`, `code-review` (Spec axis) |
+| [PLAN.md](PLAN.md) | `planner` | `architect` |

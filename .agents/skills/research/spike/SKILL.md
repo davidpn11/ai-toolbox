@@ -20,13 +20,13 @@ Comparing approaches is one spike with the same criteria applied to each candida
 
 ## 2. Read first
 
-Load the `research` skill for each documented limit, version constraint, or known issue the question depends on. It runs in the background; start step 3 on the parts the docs won't change. If the docs already settle the question, stop and write the verdict from them.
+Call the Skill tool with "research" for each documented limit, version constraint, or known issue the question depends on. It runs in the background; start step 3 on the parts the docs won't change. If the docs already settle the question, stop and write the verdict from them.
 
-For code the spike must plug into, load the `investigation` skill, or send one `scout` for a narrow lookup.
+For code the spike must plug into, call the Skill tool with "investigation", or send one `scout` for a narrow lookup.
 
 ## 3. Build the smallest thing that answers
 
-Load the `prototype` skill and follow its rules (throwaway, trivial to run, no polish). Most spikes take the script branch: the smallest program that exercises the question. Work on a `spike/<name>` branch or a scratch directory, never on the main line.
+Call the Skill tool with "prototype" and follow its rules (throwaway, trivial to run, no polish). Most spikes take the script branch: the smallest program that exercises the question. Work on a `spike/<name>` branch or a scratch directory, never on the main line.
 
 ## 4. Measure
 
@@ -40,7 +40,7 @@ Use `SPIKE.md` and the writing rules from the `doc-templates` skill. Save it to 
 - **NO-GO**: a criterion failed for a reason the implementation can't fix. Say what failed and what the alternatives are.
 - **INCONCLUSIVE**: the timebox ran out or the evidence is mixed. Say what would settle it and roughly what it costs.
 
-If the verdict commits the project to something hard to reverse (a datastore, a vendor, a protocol), load the `domain-modeling` skill and offer an ADR.
+If the verdict commits the project to something hard to reverse (a datastore, a vendor, a protocol), call the Skill tool with "domain-modeling" and offer an ADR.
 
 ## 6. Keep the evidence, drop the code
 
