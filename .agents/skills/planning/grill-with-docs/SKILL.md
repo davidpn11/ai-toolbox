@@ -11,7 +11,7 @@ Two skills run together for the whole session:
 1. Call the Skill tool with "grilling". That drives the interview: design tree, rounds, frontier, facts found by you and decisions put to the user.
 2. Call the Skill tool with "domain-modeling". That drives the writing: glossary challenges, `CONTEXT.md` updates inline, ADRs offered only when hard to reverse, surprising, and a real trade-off.
 
-One skill per call. If the Skill tool is unavailable in this harness, read `../grilling/SKILL.md` and `../domain-modeling/SKILL.md` directly and follow both.
+One skill per call. If the Skill tool is unavailable in this harness, find both skills' `SKILL.md` files among the installed skills and follow both.
 
 ## Self-check before the first round
 
@@ -25,7 +25,7 @@ State in one line that both skills are loaded. Partial loading (interview happen
 
 ## At the end
 
-The grilling summary lists the decisions. The domain-modeling summary lists the files written. Decisions that met none of the ADR gates live only in this conversation; if the user wants them kept, hand the conversation to a spec or plan (the `planner` skill in this collection produces one).
+The grilling summary lists the decisions. The domain-modeling summary lists the files written. Decisions that met none of the ADR gates live only in this conversation; if the user wants them kept, hand the conversation to the `spec` skill, which writes them into a spec without a new interview.
 
 ## Attribution
 

@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Surface architectural friction and propose **deepening opportunities**: refactors that turn shallow modules into deep ones. The aim is testability and AI-navigability.
 
-Call the Skill tool with "codebase-design" first. Its vocabulary (**module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality**) and principles (the deletion test, "the interface is the test surface", "one adapter = hypothetical seam, two = real") are used exactly in every suggestion; never drift into "component," "service," "API," or "boundary." If the Skill tool is unavailable, read `../codebase-design/SKILL.md`.
+Call the Skill tool with "codebase-design" first. Its vocabulary (**module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality**) and principles (the deletion test, "the interface is the test surface", "one adapter = hypothetical seam, two = real") are used exactly in every suggestion; never drift into "component," "service," "API," or "boundary." If the Skill tool is unavailable, find the `codebase-design` skill among the installed skills and read it.
 
 The domain language in `CONTEXT.md` gives names to good seams; ADRs in `docs/adr/` record decisions this review should not re-litigate.
 
@@ -23,7 +23,7 @@ The domain language in `CONTEXT.md` gives names to good seams; ADRs in `docs/adr
 
 Read the project's `AGENTS.md`, its domain glossary (`CONTEXT.md`), and any ADRs in the area you're touching first.
 
-Then spawn a read-only sub-agent to walk the codebase. Don't follow rigid heuristics; explore organically and note where you experience friction:
+Then spawn a read-only sub-agent on the standard tier (see the `delegation` skill) to walk the codebase; spotting friction is judgment, so the fast tier is too weak here. Don't follow rigid heuristics; explore organically and note where you experience friction:
 
 - Where does understanding one concept require bouncing between many small modules?
 - Where are modules **shallow**, with an interface nearly as complex as the implementation?
@@ -72,11 +72,11 @@ Side effects happen inline as decisions crystallize; call the Skill tool with "d
 - **Naming a deepened module after a concept not in `CONTEXT.md`?** Add the term to `CONTEXT.md`. Create the file lazily if it doesn't exist.
 - **Sharpening a fuzzy term during the conversation?** Update `CONTEXT.md` right there.
 - **User rejects the candidate with a load-bearing reason?** Offer an ADR, framed as: _"Want me to record this as an ADR so future architecture reviews don't re-suggest it?"_ Only offer when the reason would actually be needed by a future explorer to avoid re-suggesting the same thing; skip ephemeral reasons ("not worth it right now") and self-evident ones.
-- **Want to explore alternative interfaces for the deepened module?** Use the design-it-twice parallel sub-agent pattern in the `codebase-design` skill's `DESIGN-IT-TWICE.md`, then write the chosen design up with its `RATIONALE.md` template before implementing.
+- **Want to explore alternative interfaces for the deepened module?** Use the design-it-twice parallel sub-agent pattern in the `codebase-design` skill's `DESIGN-IT-TWICE.md`, then write the chosen design up with `RATIONALE.md` from the `doc-templates` skill before implementing.
 
 ### 4. Hand-off
 
-The output of this skill is a chosen candidate, its rationale page, and any glossary or ADR updates. Implementation is a separate step: hand the rationale to the `planner` skill (or implement directly if the change is small), and watch for the scrap signals listed in `DESIGN-RED-FLAGS.md` while building.
+The output of this skill is a chosen candidate, its rationale page, and any glossary or ADR updates. Implementation is a separate step: a small change goes to the `planner` skill with the rationale as its input; a larger one is a new idea for the `lifecycle` flow, entering at planning. Either way, watch for the scrap signals listed in `DESIGN-RED-FLAGS.md` while building.
 
 ## Attribution
 

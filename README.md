@@ -1,181 +1,144 @@
 # AI Toolbox
 
-A portable library of reusable AI agents and skills. This repo contains no application code — it exists solely to store agent definitions and skill modules that can be copied — or installed — into any project.
+A portable library of AI agent skills and subagents for the whole development lifecycle: research, planning, and implementation. It contains no application code. Install the skills into any project with `npx skills add`, and copy the subagents if you use Claude Code.
 
-## How to Use
+Skills read the **target project's** `AGENTS.md` for its stack and conventions.
 
-Two install paths, depending on what you're pulling in:
-
-- **Skills** (`.agents/skills/`) — installable with the [`skills` CLI](https://github.com/vercel-labs/skills) (`npx skills add`), which works across 75+ AI coding tools. This includes both the domain-knowledge skills (react-tailwind, elysia-api, ...) and a Skill-format version of every agent persona below, so tools that don't support Claude Code-style subagents still get the same expertise.
-- **Subagents** (`.agents/agents/`) — Claude Code-native subagent definitions (isolated context window, restricted tool access, dedicated model). These aren't part of the Skills ecosystem, so they're copied by hand — see [Copy everything](#copy-everything) below.
-
-Either way, agents/skills read the **target project's** `AGENTS.md` for workspace conventions, not this repo's.
-
-## Install with `npx skills add`
+## Install
 
 ```bash
-# Pull every skill (personas + domain knowledge) into the current project
+# Every skill
 npx skills add davidpn11/ai-toolbox --agent claude-code
 
-# Cherry-pick one or more
-npx skills add davidpn11/ai-toolbox --skill fe-engineer --skill react-tailwind --agent claude-code
+# A few
+npx skills add davidpn11/ai-toolbox --skill lifecycle --skill research --agent claude-code
 
-# See what's available without installing
+# See what's available
 npx skills add davidpn11/ai-toolbox --list
 ```
 
-Swap `--agent claude-code` for any other supported target (`cursor`, `codex`, `windsurf`, etc.) — the CLI installs into that tool's own skills directory. Omit `--agent` and it will prompt.
+Swap `--agent claude-code` for any supported target (`cursor`, `codex`, `windsurf`, ...). The CLI installs into that tool's own skills directory and flattens the phase folders, so every skill refers to the others by name.
 
-## Available Agents
+Claude Code subagents are not part of the skills ecosystem. Copy them by hand:
 
-| Agent | Role | Tools | Invocation |
-|-------|------|-------|------------|
-| `architect` | Orchestrator — delegates all work, never implements directly | Read-only + agent delegation | User-invocable, primary entry point |
-| `planner` | Context enricher — asks questions, creates plan.yaml with DAG of tasks | Read-only | Subagent of architect |
-| `fe-engineer` | Frontend implementation — React 19, TS, Tailwind v4, Next.js/Vite | Full edit | Subagent |
-| `ui-engineer` | Web quality — accessibility (WCAG 2.1 AA), SEO, Core Web Vitals | Full edit | Subagent |
-| `be-js-engineer` | Backend JS — TypeScript + Bun.js APIs | Full edit | Subagent |
-| `be-rust-engineer` | Backend Rust — Axum/Actix APIs and scripts | Full edit | Subagent |
-| `quality-engineer` | Testing — Vitest unit tests, Playwright e2e | Full edit | Subagent |
-| `security-engineer` | Security audit — OWASP Top 10, secrets, vulnerabilities | Read-only (never modifies code) | Subagent |
+```bash
+mkdir -p /path/to/project/.claude/agents
+cp ai-toolbox/.agents/agents/*.md /path/to/project/.claude/agents/
+```
+
+Each subagent preloads skills by name, so install the skills too.
+
+## The flow
+
+```
+/lifecycle <idea>
+   │
+   ├─ 1. Research ── investigation · spike · research · prototype
+   │                 (what exists, what works, what the docs say)
+   │
+   ├─ 2. Planning ── product-research → design-research → grilling + domain-modeling
+   │                 → codebase-design → spec → planner
+   │                 (questionnaire and prototype when a question can't be asked here)
+   │
+   └─ 3. Implementation ── architect → specialists in waves → code-review → security wave
+```
+
+Every phase writes into one feature folder, and the next phase reads it:
+
+```
+docs/features/<slug>/
+  research/*.md  investigation-*.md  spike-*.md
+  product-brief.md  design-brief.md  questionnaire-*.md  rationale-*.md
+  spec.md  plan.yaml
+CONTEXT.md        glossary (project-wide)
+docs/adr/         decisions (project-wide)
+```
+
+Because the state lives in files, `/lifecycle <slug>` resumes in a fresh session from wherever the work stopped.
 
 ## Skills
 
-`.agents/skills/` — every entry here is `npx skills add`-installable.
-
-**Agent-persona skills** (Skill-format twin of each subagent above, for tools without subagent support):
-
-| Skill | Companion subagent |
-|-------|---------------------|
-| `architect` | `architect` |
-| `planner` | `planner` |
-| `fe-engineer` | `fe-engineer` |
-| `ui-engineer` | `ui-engineer` |
-| `be-js-engineer` | `be-js-engineer` |
-| `be-rust-engineer` | `be-rust-engineer` |
-| `quality-engineer` | `quality-engineer` |
-| `security-engineer` | `security-engineer` |
-
-**Domain-knowledge skills** — reusable reference material, used by the agents above:
-
-| Skill | Used By |
-|-------|---------|
-| `react-tailwind` | fe-engineer, ui-engineer |
-| `elysia-api` | be-js-engineer |
-| `playwright-testing` | quality-engineer |
-| `owasp-security` | security-engineer |
-| `monorepo` | fe-engineer, be-js-engineer, architect |
-
-**Workflow skills** — reusable engineering workflows, independent of the persona agents. Adapted from [mattpocock/skills](https://github.com/mattpocock/skills) and [cursor/plugins](https://github.com/cursor/plugins) (both MIT, see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)); the survey behind them is in [docs/research/](docs/research/skills-survey-mattpocock-cursor-pstack.md).
+### Shared
 
 | Skill | What it does | Invoked by |
 |-------|--------------|------------|
-| `grilling` | Interview the user in rounds until nothing is silently assumed; facts found by the agent, decisions put to the user | user or model |
-| `grill-with-docs` | `grilling` plus `domain-modeling`: the interview writes `CONTEXT.md` and ADRs as it goes | user |
-| `domain-modeling` | Glossary and ADR discipline (`CONTEXT.md`, `docs/adr/`), with the three-gate ADR rule | model |
-| `research` | Background agent, primary sources only, cited Markdown under `docs/research/` with confidence tiers | model |
-| `prototype` | Throwaway code that answers one design question: shareable HTML logic demo, or structurally different UI variants behind `?variant=` | model |
-| `codebase-design` | Deep-module vocabulary (module, interface, seam, adapter, depth, locality), red flags, design-it-twice, rationale template | model |
-| `architecture-review` | Scan for deepening opportunities, visual before/after report, then grill through the chosen candidate | user |
-| `code-review` | Parallel reviewers per axis (Standards, Spec, optional Quality and Blast radius), then lead judgment into Act on / Consider / Noted / Dismissed | model |
-| `resolve-merge-conflicts` | Resolve by intent from commits, PRs, and issues; never `--abort`; checks green before commit | model |
-| `unslop` | Numbered list of AI-writing tells to remove from prose, plus a code-slop section | model |
-| `figma-design` | Figma MCP server workflow in both directions: design to code with Code Connect and tokens, code and prototypes back to the canvas | model |
+| `lifecycle` | Conductor: detects the phase from the feature folder and runs the next skill | user |
+| `delegation` | Model tiers (fast, standard, deep), the subagent brief format, and the response contract | model |
+| `doc-templates` | Feature folder layout, writing rules (provenance, confidence tiers, gaps), and templates for research, investigation, spike, briefs, questionnaire, ADR, rationale, spec, and plan | model |
 
-`code-review` shares its name with Claude Code's built-in `/code-review`. Installing it into a project shadows the built-in one; rename the directory if you want both.
+### Research: find out everything the feature depends on
 
-## Installation
+| Skill | What it does | Runs on |
+|-------|--------------|---------|
+| `research` | One question, primary sources, one cited note | forked background subagent, `sonnet` |
+| `investigation` | How the current code works, why, and what a change touches | `scout` fan-out on `haiku`, verified by the main model |
+| `spike` | Time-boxed feasibility test with a GO / NO-GO / INCONCLUSIVE verdict | main model, `runner` for measurements |
+| `prototype` | Throwaway code that answers one design question (logic demo, UI variants, or a script) | main model |
+| `unslop` | Removes AI-writing tells from prose and slop from code; every document passes through it | main model |
 
-### `npx skills add` (recommended for skills)
+`unslop` feeds `research`, which feeds `investigation` and `spike`.
 
-See [Install with `npx skills add`](#install-with-npx-skills-add) above. This installs from `.agents/skills/` — both the persona skills and the domain-knowledge skills — into the target project's own skills directory, in the format that project's tool expects.
+### Planning: decide what to build, then how
 
-### Copy everything (only way to get native Claude Code subagents)
+| Skill | What it does | Invoked by |
+|-------|--------------|------------|
+| `product-research` | Problem, users, alternatives, competitors, success signals, through parallel research; writes the product brief | model |
+| `design-research` | Flows, every screen state, prior-art patterns, design-system fit, accessibility; writes the design brief | model |
+| `grilling` | Interview in rounds until nothing is silently assumed; facts found by agents, decisions put to the user | model |
+| `grill-with-docs` | `grilling` plus `domain-modeling`, as one command | user |
+| `domain-modeling` | `CONTEXT.md` glossary and ADRs, written the moment a term or decision settles | model |
+| `questionnaire` | A document for someone else to fill in when the answer is in their head | model |
+| `codebase-design` | Deep-module vocabulary, red flags, design-it-twice, rationale pages | model |
+| `architecture-review` | Scans for deepening opportunities and grills through the one you pick | user |
+| `figma-design` | Figma MCP in both directions: design to code, code and prototypes to canvas | model |
+| `spec` | Synthesizes the feature folder into one buildable spec | model |
+| `planner` | Spec to `plan.yaml`: vertical slices, single-specialist tasks, waves, contracts, tiers | model |
 
-```bash
-cp -r ai-toolbox/.agents /path/to/your-project/
-cp ai-toolbox/AGENTS.md /path/to/your-project/  # optional — adapt for your project
-```
+### Implementation: build it
 
-### Cherry-pick individual agents or skills
+| Skill | What it does |
+|-------|--------------|
+| `architect` | Executes `plan.yaml` wave by wave through the specialists, then code review and a security wave |
+| `fe-engineer`, `ui-engineer`, `be-js-engineer`, `be-rust-engineer`, `quality-engineer`, `security-engineer` | Specialist personas, one per domain |
+| `react-tailwind`, `elysia-api`, `playwright-testing`, `owasp-security`, `monorepo` | Reference material the personas load |
+| `code-review` | Parallel reviewers per axis (Standards, Spec, Quality, Blast radius), then lead judgment |
+| `resolve-merge-conflicts` | Resolves conflicts by intent; never aborts; checks pass before commit |
 
-```bash
-# Single subagent
-cp ai-toolbox/.agents/agents/fe-engineer.md /path/to/your-project/.agents/agents/
+`code-review` shares its name with Claude Code's built-in `/code-review`. Installing it shadows the built-in one; rename the directory if you want both.
 
-# Single skill (works for both persona and domain-knowledge skills)
-cp -r ai-toolbox/.agents/skills/react-tailwind /path/to/your-project/.agents/skills/
-```
+## Subagents and model tiers
 
-After copying or installing, edit the target project's `AGENTS.md` to declare its own stack, coding standards, and conventions. The agents/skills read that file at runtime.
+Cheap work goes to cheap models; the user conversation and decisions stay on the main model. The `delegation` skill holds the rules; these Claude Code subagents put them into practice:
 
-## Architecture
+| Subagent | Model | Job |
+|----------|-------|-----|
+| `scout` | `haiku` | Read-only fact-finding: files, call sites, history, with `path:line` evidence |
+| `runner` | `haiku` | Runs tests, builds, benchmarks, scripts; reports output; never fixes |
+| `fe-engineer`, `ui-engineer`, `be-js-engineer`, `be-rust-engineer`, `quality-engineer` | `sonnet` | One plan task each, preloading the persona and reference skills |
+| `security-engineer` | `sonnet` | Read-only audit |
+| `architect` | `inherit` | Orchestrator. Run it as the main session agent (`claude --agent architect`); a subagent cannot spawn subagents |
 
-The **architect** agent orchestrates all work. It never implements directly — instead it delegates to specialized agents through a plan-based workflow:
-
-```
-User Request
-    │
-    ▼
-┌──────────┐     ┌──────────┐
-│ architect │────▶│ planner  │  ← asks questions, creates plan.yaml
-└──────────┘     └──────────┘
-    │
-    ▼ (delegates per plan)
-┌────────────────────────────────────────────────┐
-│  fe-engineer  │  be-js-engineer   │  ui-engineer│
-│  be-rust-engineer   │  quality-engineer         │
-└────────────────────────────────────────────────┘
-    │
-    ▼ (final review)
-┌───────────────────┐
-│ security-engineer │  ← read-only audit
-└───────────────────┘
-```
+The `research` skill forks its own background subagent on `sonnet` through skill frontmatter (`context: fork`, `model: sonnet`), so calling it once per question fans out research in parallel. Harnesses without these keys ignore them and follow the same instructions in the skill body.
 
 ## Structure
 
 ```
 .agents/
-├── agents/                # 8 Claude Code subagents (copy-only, not npx-installable)
-│   ├── architect.md
-│   ├── planner.md
-│   ├── fe-engineer.md
-│   ├── ui-engineer.md
-│   ├── be-js-engineer.md
-│   ├── be-rust-engineer.md
-│   ├── quality-engineer.md
-│   └── security-engineer.md
-└── skills/                # npx skills add-installable — personas + knowledge
-    ├── architect/         SKILL.md
-    ├── planner/           SKILL.md
-    ├── fe-engineer/       SKILL.md
-    ├── ui-engineer/       SKILL.md
-    ├── be-js-engineer/    SKILL.md
-    ├── be-rust-engineer/  SKILL.md
-    ├── quality-engineer/  SKILL.md
-    ├── security-engineer/ SKILL.md
-    ├── react-tailwind/    SKILL.md
-    ├── elysia-api/        SKILL.md
-    ├── playwright-testing/SKILL.md
-    ├── owasp-security/    SKILL.md
-    ├── monorepo/          SKILL.md
-    ├── grilling/          SKILL.md
-    ├── grill-with-docs/   SKILL.md
-    ├── domain-modeling/   SKILL.md, CONTEXT-FORMAT.md, ADR-FORMAT.md
-    ├── research/          SKILL.md
-    ├── prototype/         SKILL.md, LOGIC.md, UI.md
-    ├── codebase-design/   SKILL.md, DEEPENING.md, DESIGN-IT-TWICE.md, DESIGN-RED-FLAGS.md, RATIONALE.md
-    ├── architecture-review/ SKILL.md, HTML-REPORT.md
-    ├── code-review/       SKILL.md, references/
-    ├── resolve-merge-conflicts/ SKILL.md
-    ├── unslop/            SKILL.md
-    └── figma-design/      SKILL.md
-AGENTS.md                  # Delegation protocol & agent catalog
-THIRD_PARTY_NOTICES.md     # MIT notices for adapted skills
-docs/research/             # Research notes written by the research skill
+├── agents/              Claude Code subagents (copy to .claude/agents/)
+└── skills/
+    ├── shared/          lifecycle, delegation, doc-templates
+    ├── research/        research, investigation, spike, prototype, unslop
+    ├── planning/        product-research, design-research, grilling, grill-with-docs,
+    │                    domain-modeling, questionnaire, codebase-design,
+    │                    architecture-review, figma-design, spec, planner
+    └── implementation/  architect, the six personas, five reference skills,
+                         code-review, resolve-merge-conflicts
+research/                decisions and surveys about this repo (ADR-001, ADR-002)
+THIRD_PARTY_NOTICES.md   MIT notices for adapted skills
 ```
 
-## Delegation Protocol
+Skills sit exactly at `.agents/skills/<phase>/<skill>/SKILL.md`. A phase folder must not contain a `SKILL.md` of its own: the `skills` CLI stops descending at the first one it finds. See [ADR-001](research/ADR-001-three-phase-skill-layout.md) for this layout and [ADR-002](research/ADR-002-skills-survey-mattpocock-cursor-pstack.md) for the survey behind the adapted skills.
 
-See [AGENTS.md](AGENTS.md) for the full delegation protocol, plan schema, task lifecycle, and execution rules.
+## Credits
+
+Many workflow skills are adapted from [mattpocock/skills](https://github.com/mattpocock/skills) and [cursor/plugins](https://github.com/cursor/plugins), both MIT. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

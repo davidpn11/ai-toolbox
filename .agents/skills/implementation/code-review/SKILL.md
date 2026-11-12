@@ -27,7 +27,7 @@ Look for the originating spec, in this order:
 
 1. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`), fetched with `gh issue view` / `gh pr view` or the tracker the project's `AGENTS.md` names.
 2. A path the user passed as an argument.
-3. A spec or plan file under `docs/`, `docs/plan/`, `specs/`, or `.scratch/` matching the branch name or feature.
+3. A `spec.md` in a feature folder (`docs/features/<slug>/`, see the `doc-templates` skill), or a spec or plan file under `docs/`, `specs/`, or `.scratch/` matching the branch name or feature.
 4. If nothing is found, ask the user where the spec is. If there isn't one, the Spec axis is skipped and the report says "no spec available".
 
 ### 3. Identify the standards sources
@@ -48,7 +48,7 @@ For high-stakes changes, run the same brief against a second model where the har
 
 ### 5. Spawn the sub-agents in parallel
 
-One read-only sub-agent per axis, all launched in one turn. Every brief is self-contained: the sub-agent has no other access to this file. Each brief includes:
+One read-only sub-agent per axis, all launched in one turn, on the standard tier (see the `delegation` skill). The lead judgment in step 7 stays with you. Every brief is self-contained: the sub-agent has no other access to this file. Each brief includes:
 
 - The diff command and commit list, the intent paragraph, and the reviewer contract in [references/reviewer-brief.md](references/reviewer-brief.md) pasted in full.
 - **Standards**: the standards files found in step 3, the full smell baseline pasted in, and the instruction: "Report, per file/hunk where relevant, (a) every place the diff violates a documented standard, citing the standard (file + rule); and (b) any baseline smell you spot, naming it and quoting the hunk. Distinguish hard violations from judgement calls. Skip anything tooling enforces. Under 400 words."

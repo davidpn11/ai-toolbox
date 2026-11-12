@@ -1,6 +1,6 @@
 # Design rationale template
 
-The prose that ships alongside a type sketch. One page. Sentence-case headings, no boilerplate. Replace the italic notes with actual content. Uses the vocabulary in [SKILL.md](SKILL.md).
+The prose that ships alongside a type sketch. One page. Sentence-case headings, no boilerplate. Replace the italic notes with actual content. Uses the vocabulary of the `codebase-design` skill.
 
 ```md
 ## Problem
@@ -32,4 +32,4 @@ The prose that ships alongside a type sketch. One page. Sentence-case headings, 
 *The first thing to build against the sketch. One sentence.*
 ```
 
-If any decision here meets all three ADR gates (hard to reverse, surprising without context, a real trade-off), record it with the `domain-modeling` skill's ADR format instead of leaving it only in this page.
+If any decision here meets all three ADR gates (hard to reverse, surprising without context, a real trade-off), record it as an ADR with the `domain-modeling` skill instead of leaving it only in this page.

@@ -1,6 +1,6 @@
-# Skills survey: mattpocock/skills and cursor/plugins (pstack)
+# ADR-002: Skills survey of mattpocock/skills and cursor/plugins (pstack)
 
-Research notes for porting ideas into `ai-toolbox` (`.agents/skills/<name>/SKILL.md`, installable with `npx skills add`).
+Research notes for porting ideas into `ai-toolbox`. Written before the restructure in [ADR-001](ADR-001-three-phase-skill-layout.md); paths to ai-toolbox skills below are the old flat layout.
 
 ## Sources and provenance
 
