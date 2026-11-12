@@ -22,7 +22,7 @@ If the line above is empty or still reads as a placeholder, the question is the 
 ## The researcher's job
 
 1. Investigate the question against **primary sources**: official docs, source code, specs, first-party APIs, changelogs, release notes. Not a secondary write-up of them. Follow every claim back to the source that owns it. Prefer cloning a repo and reading files over fetching a rendered page of it.
-2. Write the findings to one Markdown note, using `RESEARCH.md` and the writing rules from the `doc-templates` skill (call the Skill tool with "doc-templates"). Every claim gets a confidence tier and a citation (URL, or repo path plus commit SHA). Before saving, call the Skill tool with "unslop" and apply it to the prose.
+2. Write the findings to one Markdown note, using `RESEARCH.md` and the writing rules from the `doc-templates` skill. Every claim gets a confidence tier and a citation (URL, or repo path plus commit SHA). Before saving, load the `unslop` skill and apply it to the prose.
 3. Save it where the brief says. Otherwise, in a feature folder at `research/<slug>.md`; otherwise where the repo keeps such notes; otherwise `docs/research/<slug>.md`. Say where.
 4. Stop when every part of the question has a cited answer or a documented gap. One file, one question. Do not widen it.
 5. Reply with the response contract from the `delegation` skill: the path, the answer in at most 3 sentences, and the biggest gap.

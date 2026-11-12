@@ -94,5 +94,5 @@ export function useItems() {
 
 - Read the target project's `AGENTS.md` and existing codebase patterns before implementing.
 - TDD: tests first (Red), minimal code to pass (Green).
-- Use the `react-tailwind` skill when available for patterns reference.
+- Use the `react-tailwind.md` in this skill (or, from `ui-engineer`, in the `fe-engineer` skill) for patterns reference.
 - If changes touch shared types/interfaces, verify no consumers break.

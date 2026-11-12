@@ -1,8 +1,3 @@
----
-name: owasp-security
-description: "OWASP Top 10 security review checklist with vulnerable vs secure code examples. Use when auditing code for security vulnerabilities, reviewing authentication, scanning for secrets, or checking dependency safety."
----
-
 # OWASP Top 10 Security Checklist
 
 Comprehensive security review guide covering the OWASP Top 10 (2021) with actionable code examples.

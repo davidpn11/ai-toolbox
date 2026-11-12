@@ -11,7 +11,7 @@ Interview the user relentlessly until you reach a shared understanding. Map this
 
 - Start from what exists. Read the target project's `AGENTS.md`, `CONTEXT.md`, and `docs/adr/` if present, so you don't re-ask what is already decided. In a feature folder (see the `doc-templates` skill), read the briefs, research, and spikes too: their **Open questions** sections seed the first round, and their findings are facts you no longer need to ask about.
 - Leave plan mode off. Plan mode pushes toward producing a plan; grilling is about finding out what the plan should contain.
-- Classify each candidate question before asking it. If the answer is a fact you could observe by running or reading something (behavior, timing, layout, output, what the code does today), it is not the user's to answer. Find it yourself, or build a throwaway to observe it (call the Skill tool with "prototype"). Only decisions go to the user.
+- Classify each candidate question before asking it. If the answer is a fact you could observe by running or reading something (behavior, timing, layout, output, what the code does today), it is not the user's to answer. Find it yourself, or build a throwaway to observe it (load the `prototype` skill). Only decisions go to the user.
 
 ## Rounds and the frontier
 
@@ -37,7 +37,7 @@ If the user says "one question at a time", switch to single-question rounds for 
 
 ## Facts versus decisions
 
-Finding *facts* is your job, never the user's. When a frontier question needs a fact from the environment (filesystem, tools, docs, running code), dispatch a fast-tier sub-agent (the `scout`, see the `delegation` skill) to find it, or call the Skill tool with "research" when the fact lives outside the repo; don't ask the user for anything you could look up yourself. Don't block on it: a running exploration is an unsettled prerequisite, so only the questions downstream of it wait for the sub-agent to report; ask the rest of the frontier now. The *decisions* are the user's: put each to them and wait.
+Finding *facts* is your job, never the user's. When a frontier question needs a fact from the environment (filesystem, tools, docs, running code), dispatch a fast-tier sub-agent (the `scout`, see the `delegation` skill) to find it, or load the `research` skill when the fact lives outside the repo; don't ask the user for anything you could look up yourself. Don't block on it: a running exploration is an unsettled prerequisite, so only the questions downstream of it wait for the sub-agent to report; ask the rest of the frontier now. The *decisions* are the user's: put each to them and wait.
 
 Some answers sit in someone else's head (a stakeholder, legal, a customer). Offer the `questionnaire` skill for those and keep grilling the rest of the frontier.
 

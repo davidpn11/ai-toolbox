@@ -20,7 +20,7 @@ Accept "don't know" for any of these; it becomes a research question.
 
 ## 2. Fan out the research
 
-Turn the gaps into separate questions and call the Skill tool with "research" once per question, all in the same turn, each told to save under the feature folder's `research/`. Typical questions:
+Turn the gaps into separate questions and load the `research` skill once per question, all in the same turn, each told to save under the feature folder's `research/`. Typical questions:
 
 - How do 3 to 5 comparable products solve this? One question per product or per cluster, asking for the flow, the feature set, the pricing or packaging if it matters, and where users complain.
 - What evidence is there that the problem is real and how it hurts: support threads, reviews, forum posts, issue trackers, analytics the project can reach.

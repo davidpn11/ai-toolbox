@@ -30,7 +30,7 @@ Launch one read-only explorer per angle in the same turn: the `scout` subagent, 
 | Config and runtime | Flags, env vars, jobs, infra definitions that change behaviour. |
 | Impact | Every call site and consumer the planned change would touch. |
 
-For a question about a third-party library or API the area depends on, call the Skill tool with "research" instead of a scout.
+For a question about a third-party library or API the area depends on, load the `research` skill instead of a scout.
 
 Keep the user informed while explorers run, and ask nothing that they will answer.
 

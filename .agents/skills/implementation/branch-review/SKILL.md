@@ -1,5 +1,5 @@
 ---
-name: code-review
+name: branch-review
 description: "Review the changes since a fixed point (commit, branch, tag, or merge-base) along separate axes: Standards (repo conventions plus a code-smell baseline), Spec (does it do what the issue asked), and optionally Quality (structural simplification) and Blast radius (what it breaks elsewhere). Runs each axis in a parallel read-only sub-agent, then applies lead judgment into Act on / Consider / Noted / Dismissed. Use when the user wants to review a branch, a PR, work-in-progress changes, or asks to 'review since X'."
 ---
 

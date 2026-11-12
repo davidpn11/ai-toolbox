@@ -1,6 +1,6 @@
 # Plan template
 
-`plan.yaml` in the feature folder. Written by `planner`, executed and kept current by `architect`.
+`plan.yaml` in the feature folder. Written, executed and kept current by `planner`.
 
 ```yaml
 plan_id: string                        # the feature slug
@@ -16,8 +16,12 @@ tasks:
     slice: string                      # the vertical slice this task belongs to
     description: |                     # rich context for the assigned agent
     wave: number                       # 1 runs first, 2 waits for 1, and so on
-    agent: string                      # a specialist from the architect's roster
+    repo: string                       # a repo name from the hub registry; one repo per task
+    agent: string | null               # a specialist from the planner's roster, or null
+    runtime: claude | codex            # which Orca worker runs it, see the delegation skill
     tier: fast | standard | deep       # model tier, see the delegation skill
+    spec_file: string                  # features/<slug>/tasks/<id>.md, written at dispatch
+    branch: string | null              # the worker's branch, filled in when it reports
     status: pending | in_progress | completed | failed | needs_revision
     dependencies:
       - string                         # task ids this waits for
@@ -28,6 +32,10 @@ tasks:
     verification:
       - string                         # commands or checks to run
     estimated_effort: small | medium | large
+
+merge_order:                           # one PR per repo; providers first
+  - repo: string
+    pr: string | null                  # PR URL once opened
 
 contracts:                             # interfaces between tasks in different waves
   - from_task: string

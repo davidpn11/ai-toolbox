@@ -16,8 +16,8 @@ Read `product-brief.md` in the feature folder if it exists (see the `doc-templat
 In parallel, in one turn:
 
 - Send a `scout` (fast tier, see the `delegation` skill) to list the project's design system: component library paths, tokens and theme config, layout primitives, existing screens that do something similar. Ask for paths, not opinions.
-- If the user has a Figma file or frame, call the Skill tool with "figma-design" and pull the context for the relevant frames (Direction 1, steps 1 to 3).
-- Call the Skill tool with "research" for interaction prior art: how 3 to 5 named products handle this flow, with screenshots or links. One call per product or pattern. Save under the feature folder's `research/`.
+- If the user has a Figma file or frame, load the `figma-design` skill and pull the context for the relevant frames (Direction 1, steps 1 to 3).
+- Load the `research` skill for interaction prior art: how 3 to 5 named products handle this flow, with screenshots or links. One call per product or pattern. Save under the feature folder's `research/`.
 
 ## 3. Draft flows and states
 
@@ -30,7 +30,7 @@ While research runs, draft from the product brief:
 
 ## 4. Settle what can't be asked
 
-Questions like "one long form or three steps?" or "should this feel instant or deliberate?" need something to react to. Call the Skill tool with "prototype" and take its UI branch: several structurally different variants on one route behind `?variant=`, each screenshotted. If the team designs in Figma, use the `figma-design` skill's Direction 3 to send the winner back to the canvas.
+Questions like "one long form or three steps?" or "should this feel instant or deliberate?" need something to react to. Load the `prototype` skill and take its UI branch: several structurally different variants on one route behind `?variant=`, each screenshotted. If the team designs in Figma, use the `figma-design` skill's Direction 3 to send the winner back to the canvas.
 
 Record each variant, its evidence, and your recommendation. The user picks.
 

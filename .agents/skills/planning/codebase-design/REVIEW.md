@@ -1,14 +1,8 @@
----
-name: architecture-review
-description: "Scan a codebase for deepening opportunities (shallow modules, leaky seams, untestable clusters), present them as a visual report with before/after diagrams, then interview the user through whichever candidate they pick. Use when the user asks for an architecture review, wants to know where the codebase hurts, or asks what to refactor next."
-disable-model-invocation: true
----
-
 # Architecture review
 
 Surface architectural friction and propose **deepening opportunities**: refactors that turn shallow modules into deep ones. The aim is testability and AI-navigability.
 
-Call the Skill tool with "codebase-design" first. Its vocabulary (**module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality**) and principles (the deletion test, "the interface is the test surface", "one adapter = hypothetical seam, two = real") are used exactly in every suggestion; never drift into "component," "service," "API," or "boundary." If the Skill tool is unavailable, find the `codebase-design` skill among the installed skills and read it.
+Use the `codebase-design` vocabulary in [SKILL.md](SKILL.md). Its terms (**module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality**) and principles (the deletion test, "the interface is the test surface", "one adapter = hypothetical seam, two = real") are used exactly in every suggestion; never drift into "component," "service," "API," or "boundary."
 
 The domain language in `CONTEXT.md` gives names to good seams; ADRs in `docs/adr/` record decisions this review should not re-litigate.
 
@@ -65,9 +59,9 @@ Do NOT propose interfaces yet. After the file is written, ask the user: "Which o
 
 ### 3. Grilling loop
 
-Once the user picks a candidate, call the Skill tool with "grilling" to walk the decision tree with them: constraints, dependencies, the shape of the deepened module, what sits behind the seam, what tests survive.
+Once the user picks a candidate, load the `grilling` skill to walk the decision tree with them: constraints, dependencies, the shape of the deepened module, what sits behind the seam, what tests survive.
 
-Side effects happen inline as decisions crystallize; call the Skill tool with "domain-modeling" to keep the domain model current as you go:
+Side effects happen inline as decisions crystallize; load the `domain-modeling` skill to keep the domain model current as you go:
 
 - **Naming a deepened module after a concept not in `CONTEXT.md`?** Add the term to `CONTEXT.md`. Create the file lazily if it doesn't exist.
 - **Sharpening a fuzzy term during the conversation?** Update `CONTEXT.md` right there.
