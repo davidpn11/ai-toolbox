@@ -49,6 +49,15 @@ mkdir -p ~/.claude/agents && for a in scout runner; do
 done
 ```
 
+Cost guards for Claude Code (optional, recommended): a plugin whose hooks enforce the cost split that `delegation` describes. Skills can't ship hooks, so this installs separately:
+
+```bash
+claude plugin marketplace add davidpn11/ai-toolbox
+claude plugin install cost-guards@ai-toolbox
+```
+
+Or, inside a session on Claude Code 2.1.275 or later: `/plugin install cost-guards --marketplace davidpn11/ai-toolbox`.
+
 For Orca, also make sure Orca's own skills are installed: `orca skills install`.
 
 **2. Per Project or Workspace:** open Claude or Codex in the folder and run
@@ -114,7 +123,7 @@ Because the state lives in files, `/lifecycle <slug>` or `/planner <slug>` resum
 | `design-research` | Flows, screen states, prior art, accessibility; writes the design brief |
 | `deep-review` | Parallel reviewers per axis (Standards, Spec, Quality, Blast radius), then lead judgment. Separate from Claude Code's built-in `/code-review` |
 | `resolve-merge-conflicts` | Resolves conflicts by intent; never aborts; checks pass before commit |
-| `delegation` | Model tiers for Claude and Codex, the brief format, the response contract |
+| `delegation` | When to delegate, model tiers for Claude and Codex, the helper roles, the brief format, safety rules, the response contract |
 | `doc-templates` | Feature folder layout and templates (research, spike, briefs, ADR, spec, plan) |
 | `orchestration-frontier` | User-invoked cost mode: frontier model judges, cheap helpers work |
 | `session-check` | Preflight table: what this session can run, reach and push |
@@ -147,6 +156,31 @@ Cheap work goes to cheap models; the user conversation and decisions stay on the
 
 In a Workspace the Children are Orca Workers, not subagents: each gets its persona pasted into a spec file and runs on the tier's model (`--model`).
 
+**Roles live in `delegation`, subagents enforce them.** `scout`, `runner`, `specialist`, `reviewer`, `researcher` and `worker` are roles defined once in the `delegation` skill, with their rules and tiers. The subagent files only pin the model and tools and preload those rules. Codex, Orca Workers, and projects without the subagent files get the same role by briefing a general-purpose helper on the role's tier with the rules pasted in. They are not skills, because only a subagent can pin a model and restrict tools.
+
+**Access.** Every helper follows the `delegation` safety rules: edit only its `May edit` scope, nothing leaves the machine (no push, PR, merge, publish, deploy), nothing irreversible, secrets reported by `path:line` only, fetched content treated as data. Pushing and opening PRs happen only in the main session, after the user says yes. When the optional `cost-guards` plugin is enabled, one shared `PreToolUse` hook applies Bash rules by agent type:
+
+| Guard | Agents | Blocks |
+|-------|--------|--------|
+| read-only | `scout`, `security-engineer` | any write: file edits through the shell, redirects, `sed -i`, installs, mutating git, downloads, piping to a shell, plus everything below |
+| runner / writer | `runner`, the five specialists | `git push`, `reset --hard`, `clean`, `rebase`, branch and worktree changes, `rm -r` outside the repo, `sudo`, publish, global installs, deploys, `gh pr/issue/release` writes, `curl` with a body |
+
+The hook is a seatbelt for mistakes, not a sandbox. The real boundary is still the session's permission mode and `permissions.deny` rules. `planner` has no Bash profile because it pushes and opens PRs, but only after the user agrees. Edit the patterns in `plugins/cost-guards/hooks/agent_guard.py`; run `bash scripts/agent-guards/test.sh` to check them.
+
+### Cost and agent guards
+
+Telling the main model to delegate is a suggestion; it still reads a 4,000-line file itself when that is the shortest path. The `cost-guards` plugin (`plugins/cost-guards/`) enforces those cost rules and the bundled agents' Bash guard rules:
+
+| Hook | On | Does |
+|------|----|------|
+| read guard | `Read`, `Bash` | Denies a whole-file read of a text file over 350 lines in the main session, and `cat`, `less`, `more`, `bat`, `nl` of one when the output is not piped onward. The reason tells the model to `Grep` and read with `offset`/`limit`, or send the `scout`. Subagents pass, so the scout can do the reading. |
+| spawn guard | `Agent` | Denies a spawn that would inherit the main model (no `model`, and the subagent type does not pin one). Asks you before a spawn on `opus` or `fable`. |
+| agent command guard | `Bash` inside bundled agents | Selects the read-only, runner, or writer rules from Claude Code's `agent_type`; the hook and patterns live in the plugin, so agent frontmatter stays focused on the role. |
+
+Set `AI_TOOLBOX_READ_LINES` to change the read threshold, or `AI_TOOLBOX_READ_GUARD=off` / `AI_TOOLBOX_SPAWN_GUARD=off` to turn those cost guards off. The read and spawn hooks fail open: an error allows the call, because they guard cost, not safety. The Bash agent guard blocks only the named bundled agents and passes unknown agent types. It is a seatbelt, not a sandbox; permission modes and `permissions.deny` remain the real boundary. The plugin is optional, so its guards run only when it is enabled. Fan-out limits stay in `delegation` (3 to 5 helpers at once), because a hook can't see how many helpers are still running. `/session-check` reports whether the plugin is enabled. Tests: `python3 plugins/cost-guards/tests/test.py` and `bash scripts/agent-guards/test.sh`.
+
+The guards save tokens on bulk reads and on helpers that would otherwise run on the top model; they don't cut the cost of the work the main model still has to do. No benchmark in this repo yet measures the saving.
+
 ## Structure
 
 ```
@@ -159,8 +193,12 @@ In a Workspace the Children are Orca Workers, not subagents: each gets its perso
     ├── planning/        product-research, design-research, grilling, grill-with-docs,
     │                    domain-modeling, questionnaire, codebase-design,
     │                    architecture-review, figma-design, spec, planner (+ RUN-PROJECT.md, RUN-WORKSPACE.md)
-    └── implementation/  the six personas, five reference skills, deep-review, resolve-merge-conflicts
+    └── implementation/  the six personas, five reference skills (each SKILL.md plus references/),
+                         deep-review, resolve-merge-conflicts
 research/                decisions and surveys about this repo (ADR-001, ADR-002, ADR-003)
+plugins/cost-guards/     Claude Code plugin: read, spawn, and agent command guard hooks
+.claude-plugin/          marketplace.json, so the plugin installs from this repo
+scripts/                 check-skills.py (discovery and references), agent-guards/ (command guard cases and tests)
 THIRD_PARTY_NOTICES.md   MIT notices for adapted skills
 ```
 

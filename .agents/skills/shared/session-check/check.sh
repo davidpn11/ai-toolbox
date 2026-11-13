@@ -92,6 +92,16 @@ if [ -n "$p" ]; then
   else row "✅" "skills" "$(echo "$p" | grep -c .) project skills, no clash with globals" "-"; fi
 fi
 
+# Guards: shared ai-toolbox hooks from the cost-guards plugin
+cg=$(grep -ls '"cost-guards@' "$HOME/.claude/settings.json" .claude/settings.json .claude/settings.local.json 2>/dev/null | head -1)
+if [ -n "$cg" ]; then row "✅" "cost guards" "plugin enabled ($cg)" "-"
+else row "⚠️" "cost guards" "cost-guards plugin not installed: cost and bundled-agent Bash guards are not enforced" "claude plugin marketplace add davidpn11/ai-toolbox && claude plugin install cost-guards@ai-toolbox"; fi
+for a in scout runner; do
+  f="$HOME/.claude/agents/$a.md"; [ -f ".claude/agents/$a.md" ] && f=".claude/agents/$a.md"
+  if [ ! -f "$f" ]; then row "⚠️" "agent $a" "not installed" "copy .agents/agents/$a.md from ai-toolbox to ~/.claude/agents/"
+  else row "✅" "agent $a" "installed ($f)" "-"; fi
+done
+
 echo "| | Check | Result | Fix |"
 echo "|---|---|---|---|"
 printf '%s\n' "${ROWS[@]}"

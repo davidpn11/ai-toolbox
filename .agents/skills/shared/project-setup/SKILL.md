@@ -52,10 +52,11 @@ Show a short plan and wait for a yes. Include only the rows that apply.
    - Orca's bundled skills, if missing: `orca skills install`.
 2. **Orca (Project):** register the repo if it is not registered.
 3. **Install:** the project skills the catalog's `Install when` column picks for the stack (in a Workspace, the union over all repos), plus their subagents.
-4. **Remove:** retired and shadowed skills, by name.
-5. **Keep:** foreign and custom skills, by name.
-6. **AGENTS.md:** create it or merge into it (never overwrite what is there), and add `CLAUDE.md` = `@AGENTS.md` if missing.
-7. **Where the change lands:** a Workspace is a plain folder, so the changes are written in place. A Project is a repo: Workers and other worktrees only see skills once they are committed, so the change goes on a branch `chore/project-setup` with a PR, unless the user says to leave it uncommitted.
+4. **Guards (Claude Code):** if `session-check` shows the `cost-guards` plugin missing, offer it: user scope (every session on this machine) or project scope (written to `.claude/settings.json`, so the whole team gets it). The plugin provides the cost guards and the shared Bash guard for bundled agents.
+5. **Remove:** retired and shadowed skills, by name.
+6. **Keep:** foreign and custom skills, by name.
+7. **AGENTS.md:** create it or merge into it (never overwrite what is there), and add `CLAUDE.md` = `@AGENTS.md` if missing.
+8. **Where the change lands:** a Workspace is a plain folder, so the changes are written in place. A Project is a repo: Workers and other worktrees only see skills once they are committed, so the change goes on a branch `chore/project-setup` with a PR, unless the user says to leave it uncommitted.
 
 ## 5. Apply
 
@@ -76,6 +77,15 @@ rm -rf "$SRC"
 ```
 
 In a Workspace the Children are Workers, which get their persona pasted into the spec file, so copy only `planner`. `scout` and `runner` are global (`~/.claude/agents/`); copy them too only if they are missing there.
+
+**Guards**, if the user said yes:
+
+```bash
+claude plugin marketplace add davidpn11/ai-toolbox
+claude plugin install cost-guards@ai-toolbox --scope <user|project>
+```
+
+If a flag is rejected, check `claude plugin install --help`.
 
 **Remove:** `npx skills remove <name> ... -y` for names in the lock file. For copies with no lock entry, delete `.claude/skills/<name>`, `.agents/skills/<name>`, and `.claude/agents/<name>.md` once the user has said yes. In a repo they stay in git history; outside git, move them to `<target>/.skills-removed/` first.
 

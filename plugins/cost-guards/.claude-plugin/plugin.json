@@ -1,0 +1,8 @@
+{
+  "name": "cost-guards",
+  "version": "0.1.0",
+  "description": "Hooks for the delegation skill: guard large reads, subagent model tiers, and bundled-agent Bash commands.",
+  "author": { "name": "David Nascimento" },
+  "repository": "https://github.com/davidpn11/ai-toolbox",
+  "license": "MIT"
+}

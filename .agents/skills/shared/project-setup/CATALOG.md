@@ -26,7 +26,7 @@ The one list of every ai-toolbox skill and where it belongs. `project-setup` rea
 | `design-research` | Flows, screen states, prior art; writes the design brief |
 | `deep-review` | Parallel review axes (Standards, Spec, Quality, Blast radius) + lead judgment |
 | `resolve-merge-conflicts` | Resolve conflicts by intent; checks pass before commit |
-| `delegation` | Model tiers (Claude and Codex), the brief format, the response contract |
+| `delegation` | When to delegate, model tiers (Claude and Codex), helper roles, brief format, safety rules, response contract |
 | `doc-templates` | Feature folder layout and document templates |
 | `orchestration-frontier` | User-invoked: expensive model judges, cheap helpers work |
 | `session-check` | Preflight: what this session can run, reach and push |

@@ -1,0 +1,12 @@
+{
+  "name": "ai-toolbox",
+  "description": "Plugins from davidpn11/ai-toolbox. The skills install separately with npx skills add.",
+  "owner": { "name": "David Nascimento" },
+  "plugins": [
+    {
+      "name": "cost-guards",
+      "source": "./plugins/cost-guards",
+      "description": "Hooks for large reads, subagent model tiers, and bundled-agent Bash guard rails"
+    }
+  ]
+}
