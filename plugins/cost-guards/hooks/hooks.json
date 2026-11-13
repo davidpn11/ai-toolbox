@@ -1,5 +1,5 @@
 {
-  "description": "ai-toolbox cost guards: large-file reads go to scout; subagents must pick a model tier",
+  "description": "ai-toolbox guards: safe helper commands, large-file reads, and subagent model tiers",
   "hooks": {
     "PreToolUse": [
       {
@@ -9,6 +9,10 @@
       {
         "matcher": "Agent",
         "hooks": [{ "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/spawn_guard.py\"", "timeout": 10 }]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [{ "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/agent_guard.py\"", "timeout": 10 }]
       }
     ]
   }

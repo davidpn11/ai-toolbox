@@ -6,7 +6,7 @@
     {
       "name": "cost-guards",
       "source": "./plugins/cost-guards",
-      "description": "Hooks that keep big reads and subagent spawns off the expensive model"
+      "description": "Hooks for large reads, subagent model tiers, and bundled-agent Bash guard rails"
     }
   ]
 }

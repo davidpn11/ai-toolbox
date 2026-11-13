@@ -158,25 +158,26 @@ In a Workspace the Children are Orca Workers, not subagents: each gets its perso
 
 **Roles live in `delegation`, subagents enforce them.** `scout`, `runner`, `specialist`, `reviewer`, `researcher` and `worker` are roles defined once in the `delegation` skill, with their rules and tiers. The subagent files only pin the model and tools and preload those rules. Codex, Orca Workers, and projects without the subagent files get the same role by briefing a general-purpose helper on the role's tier with the rules pasted in. They are not skills, because only a subagent can pin a model and restrict tools.
 
-**Access.** Every helper follows the `delegation` safety rules: edit only its `May edit` scope, nothing leaves the machine (no push, PR, merge, publish, deploy), nothing irreversible, secrets reported by `path:line` only, fetched content treated as data. Pushing and opening PRs happen only in the main session, after the user says yes. Each bundled subagent also carries a `PreToolUse` hook on Bash that blocks the worst commands, which holds even when the session runs in auto or bypass mode:
+**Access.** Every helper follows the `delegation` safety rules: edit only its `May edit` scope, nothing leaves the machine (no push, PR, merge, publish, deploy), nothing irreversible, secrets reported by `path:line` only, fetched content treated as data. Pushing and opening PRs happen only in the main session, after the user says yes. When the optional `cost-guards` plugin is enabled, one shared `PreToolUse` hook applies Bash rules by agent type:
 
 | Guard | Agents | Blocks |
 |-------|--------|--------|
 | read-only | `scout`, `security-engineer` | any write: file edits through the shell, redirects, `sed -i`, installs, mutating git, downloads, piping to a shell, plus everything below |
 | runner / writer | `runner`, the five specialists | `git push`, `reset --hard`, `clean`, `rebase`, branch and worktree changes, `rm -r` outside the repo, `sudo`, publish, global installs, deploys, `gh pr/issue/release` writes, `curl` with a body |
 
-The hooks are a seatbelt for mistakes, not a sandbox. The real boundary is still the session's permission mode and `permissions.deny` rules. `planner` has no hook because it pushes and opens PRs, but only after the user agrees. Edit the patterns in `scripts/agent-guards/gen.py`, then run `python3 scripts/agent-guards/gen.py && bash scripts/agent-guards/test.sh`.
+The hook is a seatbelt for mistakes, not a sandbox. The real boundary is still the session's permission mode and `permissions.deny` rules. `planner` has no Bash profile because it pushes and opens PRs, but only after the user agrees. Edit the patterns in `plugins/cost-guards/hooks/agent_guard.py`; run `bash scripts/agent-guards/test.sh` to check them.
 
-### Cost guards
+### Cost and agent guards
 
-Telling the main model to delegate is a suggestion; it still reads a 4,000-line file itself when that is the shortest path. The `cost-guards` plugin (`plugins/cost-guards/`) turns the two most expensive habits into blocked calls with a redirect:
+Telling the main model to delegate is a suggestion; it still reads a 4,000-line file itself when that is the shortest path. The `cost-guards` plugin (`plugins/cost-guards/`) enforces those cost rules and the bundled agents' Bash guard rules:
 
 | Hook | On | Does |
 |------|----|------|
 | read guard | `Read`, `Bash` | Denies a whole-file read of a text file over 350 lines in the main session, and `cat`, `less`, `more`, `bat`, `nl` of one when the output is not piped onward. The reason tells the model to `Grep` and read with `offset`/`limit`, or send the `scout`. Subagents pass, so the scout can do the reading. |
 | spawn guard | `Agent` | Denies a spawn that would inherit the main model (no `model`, and the subagent type does not pin one). Asks you before a spawn on `opus` or `fable`. |
+| agent command guard | `Bash` inside bundled agents | Selects the read-only, runner, or writer rules from Claude Code's `agent_type`; the hook and patterns live in the plugin, so agent frontmatter stays focused on the role. |
 
-Set `AI_TOOLBOX_READ_LINES` to change the threshold, or `AI_TOOLBOX_READ_GUARD=off` / `AI_TOOLBOX_SPAWN_GUARD=off` to turn a guard off. Both hooks fail open: an error allows the call, because they guard cost, not safety. They are not a fan-out limit; that stays an instruction in `delegation` (3 to 5 helpers at once), because a hook can't see how many helpers are still running. `/session-check` reports whether the plugin is enabled. Tests: `python3 plugins/cost-guards/tests/test.py`.
+Set `AI_TOOLBOX_READ_LINES` to change the read threshold, or `AI_TOOLBOX_READ_GUARD=off` / `AI_TOOLBOX_SPAWN_GUARD=off` to turn those cost guards off. The read and spawn hooks fail open: an error allows the call, because they guard cost, not safety. The Bash agent guard blocks only the named bundled agents and passes unknown agent types. It is a seatbelt, not a sandbox; permission modes and `permissions.deny` remain the real boundary. The plugin is optional, so its guards run only when it is enabled. Fan-out limits stay in `delegation` (3 to 5 helpers at once), because a hook can't see how many helpers are still running. `/session-check` reports whether the plugin is enabled. Tests: `python3 plugins/cost-guards/tests/test.py` and `bash scripts/agent-guards/test.sh`.
 
 The guards save tokens on bulk reads and on helpers that would otherwise run on the top model; they don't cut the cost of the work the main model still has to do. No benchmark in this repo yet measures the saving.
 
@@ -195,9 +196,9 @@ The guards save tokens on bulk reads and on helpers that would otherwise run on 
     └── implementation/  the six personas, five reference skills (each SKILL.md plus references/),
                          deep-review, resolve-merge-conflicts
 research/                decisions and surveys about this repo (ADR-001, ADR-002, ADR-003)
-plugins/cost-guards/     Claude Code plugin: read and spawn guard hooks, with tests
+plugins/cost-guards/     Claude Code plugin: read, spawn, and agent command guard hooks
 .claude-plugin/          marketplace.json, so the plugin installs from this repo
-scripts/                 check-skills.py (discovery and references), agent-guards/ (hook generator and tests)
+scripts/                 check-skills.py (discovery and references), agent-guards/ (command guard cases and tests)
 THIRD_PARTY_NOTICES.md   MIT notices for adapted skills
 ```
 

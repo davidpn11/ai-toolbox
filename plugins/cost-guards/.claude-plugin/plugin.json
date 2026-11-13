@@ -1,7 +1,7 @@
 {
   "name": "cost-guards",
   "version": "0.1.0",
-  "description": "Hooks that enforce the delegation skill's cost split: whole reads of large files go to a cheap reader, and subagents never silently inherit the main model.",
+  "description": "Hooks for the delegation skill: guard large reads, subagent model tiers, and bundled-agent Bash commands.",
   "author": { "name": "David Nascimento" },
   "repository": "https://github.com/davidpn11/ai-toolbox",
   "license": "MIT"

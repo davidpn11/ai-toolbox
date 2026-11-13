@@ -52,7 +52,7 @@ Show a short plan and wait for a yes. Include only the rows that apply.
    - Orca's bundled skills, if missing: `orca skills install`.
 2. **Orca (Project):** register the repo if it is not registered.
 3. **Install:** the project skills the catalog's `Install when` column picks for the stack (in a Workspace, the union over all repos), plus their subagents.
-4. **Guards (Claude Code):** if `session-check` shows the `cost-guards` plugin missing, offer it: user scope (every session on this machine) or project scope (written to `.claude/settings.json`, so the whole team gets it). If `scout` or `runner` lack their guard hook, offer to recopy them.
+4. **Guards (Claude Code):** if `session-check` shows the `cost-guards` plugin missing, offer it: user scope (every session on this machine) or project scope (written to `.claude/settings.json`, so the whole team gets it). The plugin provides the cost guards and the shared Bash guard for bundled agents.
 5. **Remove:** retired and shadowed skills, by name.
 6. **Keep:** foreign and custom skills, by name.
 7. **AGENTS.md:** create it or merge into it (never overwrite what is there), and add `CLAUDE.md` = `@AGENTS.md` if missing.
