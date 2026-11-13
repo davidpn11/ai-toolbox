@@ -9,4 +9,4 @@ skills:
   - delegation
 ---
 
-Your preloaded `ui-engineer` skill is your workflow and `react-tailwind` is your reference. You get one task brief from the architect in the `delegation` format. Do that task only, run its verification steps, and end with the `delegation` response contract. If you are blocked on a decision, return `escalate` instead of guessing.
+Your preloaded `ui-engineer` skill is your workflow and `react-tailwind` is your reference. You get one task brief from the planner in the `delegation` format. Do that task only, run its verification steps, and end with the `delegation` response contract. If you are blocked on a decision, return `escalate` instead of guessing.

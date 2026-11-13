@@ -1,161 +1,171 @@
 # AI Toolbox
 
-A portable library of AI agent skills and subagents for the whole development lifecycle: research, planning, and implementation. It contains no application code. Install the skills into any project with `npx skills add`, and copy the subagents if you use Claude Code.
+A portable library of AI agent skills and subagents for the whole development lifecycle: research, planning, and building. It contains no application code. It works in Claude Code and Codex, and it works with Orca when the work spans several repos.
 
-Skills read the **target project's** `AGENTS.md` for its stack and conventions.
+Every skill has one **scope**:
+
+- **Global** skills (research, spike, grilling, review, ...) are stack-independent. Install them once per machine and use them anywhere.
+- **Project** skills (the planner, the build flow, stack specialists) are installed into a Project or Workspace by the `project-setup` wizard, which picks them from the code it finds.
+
+A name is never installed in both scopes: Claude Code prefers the global copy, so a project copy of the same name would be silently ignored ([ADR-003](research/ADR-003-global-vs-project-scope.md)). The full list lives in [CATALOG.md](.agents/skills/shared/project-setup/CATALOG.md).
+
+## Words
+
+| Word | Means |
+| --- | --- |
+| **Project** | One git repo. |
+| **Workspace** | A plain folder that groups Projects so one Planner can change them together. Each repo inside is a clone from GitHub. In Orca it is a folder workspace, not a git repo, and it has no submodules. |
+| **Planner** | The parent agent (`planner` skill). It plans the feature, then starts Children and checks their work. |
+| **Children** | What the Planner starts: subagents in a Project, Orca **Workers** in a Workspace. |
+| **Worker** | A one-task Orca agent (Claude or Codex) in its own worktree and branch. It commits; the Planner opens the PR. |
+
+```
+Workspace (socials-workspace/)            ← you talk to the Planner here
+├── AGENTS.md       Repos · stacks · verify commands · contracts
+├── docs/features/<slug>/   spec.md · plan.yaml · tasks/*.md
+├── socials-portal/  ← clone ─┐
+└── crepe-cli/       ← clone ─┤  Workers: one worktree + branch per task
+                              └─ one PR per repo, providers first → GitHub
+```
 
 ## Install
 
-```bash
-# Every skill
-npx skills add davidpn11/ai-toolbox --agent claude-code
-
-# A few
-npx skills add davidpn11/ai-toolbox --skill lifecycle --skill research --agent claude-code
-
-# See what's available
-npx skills add davidpn11/ai-toolbox --list
-```
-
-Swap `--agent claude-code` for any supported target (`cursor`, `codex`, `windsurf`, ...). The CLI installs into that tool's own skills directory and flattens the phase folders, so every skill refers to the others by name.
-
-Claude Code subagents are not part of the skills ecosystem. Copy them by hand:
+**1. Global skills, once per machine** (Claude Code and Codex):
 
 ```bash
-mkdir -p /path/to/project/.claude/agents
-cp ai-toolbox/.agents/agents/*.md /path/to/project/.claude/agents/
+npx skills add davidpn11/ai-toolbox -g --agent claude-code --agent codex -y \
+  --skill research --skill investigation --skill spike --skill prototype --skill unslop \
+  --skill grilling --skill grill-with-docs --skill domain-modeling --skill questionnaire \
+  --skill codebase-design --skill architecture-review --skill product-research --skill design-research \
+  --skill deep-review --skill resolve-merge-conflicts --skill delegation --skill doc-templates \
+  --skill orchestration-frontier --skill session-check --skill project-setup
 ```
 
-Each subagent preloads skills by name, so install the skills too.
-
-## Work across repos with Orca
-
-When a change in one repo needs changes in another, install one skill globally, once:
+Global subagents for Claude Code (`scout` and `runner`, used by investigation, spike and session-check):
 
 ```bash
-npx skills add davidpn11/ai-toolbox --skill orca-project-setup -g --agent claude-code --agent codex
+mkdir -p ~/.claude/agents && for a in scout runner; do
+  curl -fsSL "https://raw.githubusercontent.com/davidpn11/ai-toolbox/master/.agents/agents/$a.md" -o ~/.claude/agents/$a.md
+done
 ```
 
-Then, in Claude or Codex anywhere, say `/orca-project-setup <repo A> <repo B>`. It creates an Orca folder workspace grouping the repos, installs every other skill in this collection into it for both agents (not itself, and not `unslop`, which it expects to be installed globally), and writes one `AGENTS.md` describing each repo (stack, verify commands, contracts). The repos are not touched. Open the project in Orca and ask for the feature: the `orca-planner` skill plans it, runs each task as an Orca worker (Claude or Codex) in that repo's own worktree, has the diffs reviewed by the other model family, and opens one PR per repo in merge order.
+For Orca, also make sure Orca's own skills are installed: `orca skills install`.
 
-| Skill | What it does | Invoked by |
-|-------|--------------|------------|
-| `orca-project-setup` | Creates the Orca project for a set of repos, installs the skills, describes the repos | user (install globally) |
-| `orca-planner` | Plans with `planner`, builds through Orca workers per repo, one PR per repo | user, `lifecycle` |
+**2. Per Project or Workspace:** open Claude or Codex in the folder and run
 
-Keep the other skills out of your global install: Claude Code prefers a global skill over a project skill with the same name, so a global `planner` would replace the project's copy. The setup skill checks for clashes.
+```
+/project-setup                       # this repo, or this Workspace
+/project-setup socials-portal crepe-cli socials-workspace   # a new Workspace for two repos
+```
+
+It runs `session-check` first. Then it reads the code and the skills already installed, and shows one plan: what to install, what to remove (retired or shadowed copies), and what to keep. Nothing changes until you say yes. In a Workspace it also clones each repo from GitHub, registers the clones and the folder in Orca, and writes `AGENTS.md` with each repo's stack, verify commands and contracts.
+
+**Check a session any time:** `/session-check` prints what this session can run, reach and push (shell, network, git remotes, gh auth and repo permission, Orca, skill clashes), with a fix for each gap.
 
 ## The flow
 
 ```
-/lifecycle <idea>
+/lifecycle <idea>                                   (project)
    │
-   ├─ 1. Research ── investigation · spike · research · prototype
-   │                 (what exists, what works, what the docs say)
+   ├─ 1. Research ── investigation · spike · research · prototype            (global)
    │
    ├─ 2. Planning ── product-research → design-research → grilling + domain-modeling
-   │                 → codebase-design → spec → planner
-   │                 (questionnaire and prototype when a question can't be asked here)
+   │                 → codebase-design → spec → planner (writes plan.yaml)
    │
-   └─ 3. Implementation ── architect → specialists in waves → code-review → security wave
+   └─ 3. Build ───── planner runs plan.yaml:
+                       Project:   Children = specialist subagents, wave by wave
+                       Workspace: Children = Orca Workers, one repo each, one PR per repo
+                     → deep-review → security wave
 ```
 
-Every phase writes into one feature folder, and the next phase reads it:
+Small, clear work skips straight to `/planner <request>`. Every phase writes into one feature folder, and the next phase reads it:
 
 ```
 docs/features/<slug>/
   research/*.md  investigation-*.md  spike-*.md
   product-brief.md  design-brief.md  questionnaire-*.md  rationale-*.md
-  spec.md  plan.yaml
+  spec.md  plan.yaml  tasks/<task_id>.md (Workspace)
 CONTEXT.md        glossary (project-wide)
 docs/adr/         decisions (project-wide)
 ```
 
-Because the state lives in files, `/lifecycle <slug>` resumes in a fresh session from wherever the work stopped.
+Because the state lives in files, `/lifecycle <slug>` or `/planner <slug>` resumes in a fresh session from wherever the work stopped.
+
+**Cost mode.** `/orchestration-frontier` keeps the expensive model (Opus/Fable, Sol/Astra) on judgment and review for the rest of the session. Bounded work goes to the cheapest tier that fits: a subagent, or an Orca Worker when it needs the other model family or its own worktree. Model ids per tier live only in `delegation`.
 
 ## Skills
 
-### Shared
-
-| Skill | What it does | Invoked by |
-|-------|--------------|------------|
-| `lifecycle` | Conductor: detects the phase from the feature folder and runs the next skill | user |
-| `delegation` | Model tiers (fast, standard, deep), the subagent brief format, and the response contract | model |
-| `doc-templates` | Feature folder layout, writing rules (provenance, confidence tiers, gaps), and templates for research, investigation, spike, briefs, questionnaire, ADR, rationale, spec, and plan | model |
-
-### Research: find out everything the feature depends on
-
-| Skill | What it does | Runs on |
-|-------|--------------|---------|
-| `research` | One question, primary sources, one cited note | forked background subagent, `sonnet` |
-| `investigation` | How the current code works, why, and what a change touches | `scout` fan-out on `haiku`, verified by the main model |
-| `spike` | Time-boxed feasibility test with a GO / NO-GO / INCONCLUSIVE verdict | main model, `runner` for measurements |
-| `prototype` | Throwaway code that answers one design question (logic demo, UI variants, or a script) | main model |
-| `unslop` | Removes AI-writing tells from prose and slop from code; every document passes through it | main model |
-
-`unslop` feeds `research`, which feeds `investigation` and `spike`.
-
-### Planning: decide what to build, then how
-
-| Skill | What it does | Invoked by |
-|-------|--------------|------------|
-| `product-research` | Problem, users, alternatives, competitors, success signals, through parallel research; writes the product brief | model |
-| `design-research` | Flows, every screen state, prior-art patterns, design-system fit, accessibility; writes the design brief | model |
-| `grilling` | Interview in rounds until nothing is silently assumed; facts found by agents, decisions put to the user | model |
-| `grill-with-docs` | `grilling` plus `domain-modeling`, as one command | user |
-| `domain-modeling` | `CONTEXT.md` glossary and ADRs, written the moment a term or decision settles | model |
-| `questionnaire` | A document for someone else to fill in when the answer is in their head | model |
-| `codebase-design` | Deep-module vocabulary, red flags, design-it-twice, rationale pages | model |
-| `architecture-review` | Scans for deepening opportunities and grills through the one you pick | user |
-| `figma-design` | Figma MCP in both directions: design to code, code and prototypes to canvas | model |
-| `spec` | Synthesizes the feature folder into one buildable spec | model |
-| `planner` | Spec to `plan.yaml`: vertical slices, single-specialist tasks, waves, contracts, tiers | model |
-
-### Implementation: build it
+### Global
 
 | Skill | What it does |
 |-------|--------------|
-| `architect` | Executes `plan.yaml` wave by wave through the specialists, then code review and a security wave |
-| `fe-engineer`, `ui-engineer`, `be-js-engineer`, `be-rust-engineer`, `quality-engineer`, `security-engineer` | Specialist personas, one per domain |
-| `react-tailwind`, `elysia-api`, `playwright-testing`, `owasp-security`, `monorepo` | Reference material the personas load |
-| `code-review` | Parallel reviewers per axis (Standards, Spec, Quality, Blast radius), then lead judgment |
+| `research` | One question, primary sources, one cited note (forked background subagent, `sonnet`) |
+| `investigation` | How the current code works, why, and what a change touches (`scout` fan-out, verified) |
+| `spike` | Time-boxed feasibility test with a GO / NO-GO / INCONCLUSIVE verdict |
+| `prototype` | Throwaway code that answers one design question |
+| `unslop` | Removes AI-writing tells from prose and slop from code |
+| `grilling` | Interview in rounds until nothing is silently assumed |
+| `grill-with-docs` | `grilling` plus `domain-modeling`, as one command |
+| `domain-modeling` | `CONTEXT.md` glossary and ADRs, written the moment a term or decision settles |
+| `questionnaire` | A document for someone else to fill in when the answer is in their head |
+| `codebase-design` | Deep-module vocabulary, red flags, design-it-twice, rationale pages |
+| `architecture-review` | Scans for deepening opportunities and grills through the one you pick |
+| `product-research` | Problem, users, alternatives, success signals; writes the product brief |
+| `design-research` | Flows, screen states, prior art, accessibility; writes the design brief |
+| `deep-review` | Parallel reviewers per axis (Standards, Spec, Quality, Blast radius), then lead judgment. Separate from Claude Code's built-in `/code-review` |
 | `resolve-merge-conflicts` | Resolves conflicts by intent; never aborts; checks pass before commit |
+| `delegation` | Model tiers for Claude and Codex, the brief format, the response contract |
+| `doc-templates` | Feature folder layout and templates (research, spike, briefs, ADR, spec, plan) |
+| `orchestration-frontier` | User-invoked cost mode: frontier model judges, cheap helpers work |
+| `session-check` | Preflight table: what this session can run, reach and push |
+| `project-setup` | Wizard: installs project skills into a Project or Workspace, Orca-aware |
 
-`code-review` shares its name with Claude Code's built-in `/code-review`. Installing it shadows the built-in one; rename the directory if you want both.
+### Project
+
+| Skill | What it does | Installed when |
+|-------|--------------|----------------|
+| `planner` | Plans into `plan.yaml`, then runs it through Children; one PR per repo in a Workspace | always |
+| `lifecycle` | Conductor: detects the phase from the feature folder and runs the next skill | always |
+| `spec` | Synthesizes the feature folder into one buildable spec | always |
+| `fe-engineer`, `ui-engineer` | Frontend and accessibility personas | a web UI framework |
+| `be-js-engineer`, `be-rust-engineer` | Backend personas | Bun/Node, Rust |
+| `quality-engineer`, `security-engineer` | Tests; security audit (the plan's last wave) | tests; always |
+| `react-tailwind`, `elysia-api`, `playwright-testing`, `owasp-security`, `monorepo` | Reference material the personas load | matching dependency |
+| `figma-design` | Figma MCP in both directions | on request |
 
 ## Subagents and model tiers
 
-Cheap work goes to cheap models; the user conversation and decisions stay on the main model. The `delegation` skill holds the rules; these Claude Code subagents put them into practice:
+Cheap work goes to cheap models; the user conversation and decisions stay on the main model (`delegation`).
 
-| Subagent | Model | Job |
-|----------|-------|-----|
-| `scout` | `haiku` | Read-only fact-finding: files, call sites, history, with `path:line` evidence |
-| `runner` | `haiku` | Runs tests, builds, benchmarks, scripts; reports output; never fixes |
-| `fe-engineer`, `ui-engineer`, `be-js-engineer`, `be-rust-engineer`, `quality-engineer` | `sonnet` | One plan task each, preloading the persona and reference skills |
-| `security-engineer` | `sonnet` | Read-only audit |
-| `architect` | `inherit` | Orchestrator. Run it as the main session agent (`claude --agent architect`); a subagent cannot spawn subagents |
+| Subagent | Scope | Model | Job |
+|----------|-------|-------|-----|
+| `scout` | global | `haiku` | Read-only fact-finding with `path:line` evidence |
+| `runner` | global | `haiku` | Runs tests, builds, scripts; reports output; never fixes |
+| `planner` | project | `inherit` | The parent agent. Run it as the main session (`claude --agent planner`); a subagent cannot start subagents |
+| `fe-engineer`, `ui-engineer`, `be-js-engineer`, `be-rust-engineer`, `quality-engineer` | project | `sonnet` | One plan task each, preloading persona and reference skills |
+| `security-engineer` | project | `sonnet` | Read-only audit |
 
-The `research` skill forks its own background subagent on `sonnet` through skill frontmatter (`context: fork`, `model: sonnet`), so calling it once per question fans out research in parallel. Harnesses without these keys ignore them and follow the same instructions in the skill body.
+In a Workspace the Children are Orca Workers, not subagents: each gets its persona pasted into a spec file and runs on the tier's model (`--model`).
 
 ## Structure
 
 ```
 .agents/
-├── agents/              Claude Code subagents (copy to .claude/agents/)
+├── agents/              Claude Code subagents
 └── skills/
-    ├── shared/          lifecycle, delegation, doc-templates
+    ├── shared/          lifecycle, delegation, doc-templates, project-setup (+ CATALOG.md),
+    │                    session-check, orchestration-frontier
     ├── research/        research, investigation, spike, prototype, unslop
     ├── planning/        product-research, design-research, grilling, grill-with-docs,
     │                    domain-modeling, questionnaire, codebase-design,
-    │                    architecture-review, figma-design, spec, planner
-    └── implementation/  architect, the six personas, five reference skills,
-                         code-review, resolve-merge-conflicts
-research/                decisions and surveys about this repo (ADR-001, ADR-002)
+    │                    architecture-review, figma-design, spec, planner (+ RUN-PROJECT.md, RUN-WORKSPACE.md)
+    └── implementation/  the six personas, five reference skills, deep-review, resolve-merge-conflicts
+research/                decisions and surveys about this repo (ADR-001, ADR-002, ADR-003)
 THIRD_PARTY_NOTICES.md   MIT notices for adapted skills
 ```
 
-Skills sit exactly at `.agents/skills/<phase>/<skill>/SKILL.md`. A phase folder must not contain a `SKILL.md` of its own: the `skills` CLI stops descending at the first one it finds. See [ADR-001](research/ADR-001-three-phase-skill-layout.md) for this layout and [ADR-002](research/ADR-002-skills-survey-mattpocock-cursor-pstack.md) for the survey behind the adapted skills.
+Folders are phases; scope lives in the catalog. Skills sit exactly at `.agents/skills/<phase>/<skill>/SKILL.md`, and a phase folder must not contain a `SKILL.md` of its own, because the `skills` CLI stops descending at the first one it finds ([ADR-001](research/ADR-001-three-phase-skill-layout.md)). The survey behind the adapted skills is [ADR-002](research/ADR-002-skills-survey-mattpocock-cursor-pstack.md).
 
 ## Credits
 
-Many workflow skills are adapted from [mattpocock/skills](https://github.com/mattpocock/skills) and [cursor/plugins](https://github.com/cursor/plugins), both MIT. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Many workflow skills are adapted from [mattpocock/skills](https://github.com/mattpocock/skills), [cursor/plugins](https://github.com/cursor/plugins) and [BuilderIO/skills](https://github.com/BuilderIO/skills), all MIT. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

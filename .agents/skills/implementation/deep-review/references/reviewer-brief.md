@@ -46,4 +46,4 @@ Read the surrounding code, not just the diff: callers, callees, type definitions
 **Suggestion**: (optional)
 ```
 
-Do not invoke `/code-review` or spawn additional agents: perform this review directly.
+Do not invoke `/deep-review` or `/code-review`, or spawn additional agents: perform this review directly.

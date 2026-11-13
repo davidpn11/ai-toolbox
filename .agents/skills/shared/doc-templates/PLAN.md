@@ -1,6 +1,6 @@
 # Plan template
 
-`plan.yaml` in the feature folder. Written by `planner`, executed and kept current by `architect`.
+`plan.yaml` in the feature folder. Written, executed and kept current by `planner`.
 
 ```yaml
 plan_id: string                        # the feature slug
@@ -16,8 +16,11 @@ tasks:
     slice: string                      # the vertical slice this task belongs to
     description: |                     # rich context for the assigned agent
     wave: number                       # 1 runs first, 2 waits for 1, and so on
-    agent: string                      # a specialist from the architect's roster
+    agent: string                      # a specialist from the planner's roster
     tier: fast | standard | deep       # model tier, see the delegation skill
+    repo: string                       # Workspace mode only: repo name from AGENTS.md
+    runtime: claude | codex            # Workspace mode only: which agent the Worker runs
+    pr: string                         # Workspace mode only: PR url once opened
     status: pending | in_progress | completed | failed | needs_revision
     dependencies:
       - string                         # task ids this waits for

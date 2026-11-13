@@ -22,7 +22,7 @@ Before stating what a skill does or skipping a step, read that skill: the summar
 | research done, no `spec.md` | Planning | below |
 | `spec.md` draft | Planning | finish and approve the spec |
 | approved `spec.md`, no `plan.yaml` | Planning | `planner` |
-| `plan.yaml` with pending tasks | Implementation | `architect` |
+| `plan.yaml` with pending tasks | Implementation | `planner` (runs it) |
 | every task completed | Close | below |
 
 The user can jump phases ("skip research, I know this code"). Say what the skipped phase would have checked, then go.
@@ -55,9 +55,7 @@ Steps 1 and 2 can run back to back without the user; from step 3 on, the user is
 
 ## Phase 3: Implementation
 
-Call the Skill tool with "architect". It executes `plan.yaml` wave by wave through the specialist subagents, runs `code-review` over the result, and ends with a security wave.
-
-In an Orca project (its `AGENTS.md` has a **Repos** section, from the `orca-project-setup` skill), load the `orca-planner` skill instead: it builds the same `plan.yaml` through Orca workers in each repo and opens one PR per repo.
+Call the Skill tool with "planner". It runs `plan.yaml` wave by wave through its Children, runs `deep-review` over the result, and ends with a security wave. In a Project the Children are specialist subagents; in a Workspace (its `AGENTS.md` has a **Repos** section, from `project-setup`) they are Orca Workers, one per task in that repo's own worktree, with one PR per repo.
 
 ## Close
 
@@ -66,11 +64,11 @@ Report what shipped against the spec's user stories, what was cut, and any follo
 ## Context hygiene
 
 - Keep research and planning in one session where it fits, so the grilling builds on the same thinking. When the context gets long, clear it at a phase boundary: the folder holds everything the next session needs, and running this skill again resumes from it.
-- Implementation runs in a fresh session. The architect works from the plan and pointers, not from the planning conversation.
+- Implementation runs in a fresh session. The planner works from the plan and pointers, not from the planning conversation.
 - Send reading and running work to subagents on the cheapest tier that can do it (the `delegation` skill). Keep decisions and the user conversation here.
 
 ## Off the main flow
 
 - Codebase health: `architecture-review` finds deepening opportunities; a chosen one enters this flow at planning.
-- Review any branch: `code-review`. Resolve a conflicted merge: `resolve-merge-conflicts`.
+- Review any branch: `deep-review`. Resolve a conflicted merge: `resolve-merge-conflicts`.
 - Writing quality anywhere: `unslop`.

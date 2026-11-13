@@ -11,19 +11,21 @@ A subagent is a fresh context window with one job. Delegate to keep the main ses
 
 Choose the smallest tier that can do the job. Name the tier in the brief so the choice is visible.
 
-| Tier | Claude Code | Use it for |
-|------|-------------|------------|
-| **Fast** | `model: haiku`, the `scout` or `runner` subagent | Finding files and facts in the codebase, listing call sites, reading git history, running tests, builds, linters, or scripts and reporting the output, mechanical edits with exact instructions. |
-| **Standard** | `model: sonnet` | Research against primary sources, one review axis, implementing a well-specified plan task, writing a report from notes, one design variant. |
-| **Deep** | `model: opus` or `inherit` | Interviewing the user, synthesis across many reports, design trade-offs, planning, lead judgment over reviews. This usually stays in the main session. |
+| Tier | Claude Code | Codex | Use it for |
+|------|-------------|-------|------------|
+| **Fast** | `model: haiku`, the `scout` or `runner` subagent | `gpt-6-luna` | Finding files and facts in the codebase, listing call sites, reading git history, running tests, builds, linters, or scripts and reporting the output, mechanical edits with exact instructions. |
+| **Standard** | `model: sonnet` | `gpt-6.1-terra` | Research against primary sources, one review axis, implementing a well-specified plan task, writing a report from notes, one design variant. |
+| **Deep** | `model: opus` or `inherit` | `gpt-6.1-sol` or inherit | Interviewing the user, synthesis across many reports, design trade-offs, planning, lead judgment over reviews. This usually stays in the main session. |
 
 Fast-tier output is a lead, not a fact. Before a load-bearing claim from a fast-tier subagent goes into a report, spec, or plan, open the cited file or rerun the command yourself.
 
-In other harnesses, map the tiers onto whatever models the harness offers. If the harness has no subagents, do the work inline, one task at a time, in the same order.
+This table is the one place model ids live; other skills name the tier, not the model. If an id is rejected, list the harness's models (Codex: `~/.codex/models_cache.json`) and pick the same rung. In other harnesses, map the tiers onto whatever models the harness offers.
+
+Orca Workers take the same tiers: `orca orchestration worker-start ... --agent <claude|codex> --model <id from this table>`. If the harness has no subagents, do the work inline, one task at a time, in the same order.
 
 ## Bundled subagents
 
-This collection ships thin Claude Code subagents in `.agents/agents/`. Copy them to `.claude/agents/` to use them by name.
+This collection ships thin Claude Code subagents in `.agents/agents/`. `scout` and `runner` are installed globally (`~/.claude/agents/`); `project-setup` copies the persona subagents into a project's `.claude/agents/`.
 
 - `scout` (fast, read-only): answers "where is X", "what calls Y", "what changed in Z" with paths and line numbers.
 - `runner` (fast): runs the commands it is given and reports exit codes and output. It never fixes anything.
