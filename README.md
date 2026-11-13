@@ -49,6 +49,15 @@ mkdir -p ~/.claude/agents && for a in scout runner; do
 done
 ```
 
+Cost guards for Claude Code (optional, recommended): a plugin whose hooks enforce the cost split that `delegation` describes. Skills can't ship hooks, so this installs separately:
+
+```bash
+claude plugin marketplace add davidpn11/ai-toolbox
+claude plugin install cost-guards@ai-toolbox
+```
+
+Or, inside a session on Claude Code 2.1.275 or later: `/plugin install cost-guards --marketplace davidpn11/ai-toolbox`.
+
 For Orca, also make sure Orca's own skills are installed: `orca skills install`.
 
 **2. Per Project or Workspace:** open Claude or Codex in the folder and run
@@ -158,6 +167,19 @@ In a Workspace the Children are Orca Workers, not subagents: each gets its perso
 
 The hooks are a seatbelt for mistakes, not a sandbox. The real boundary is still the session's permission mode and `permissions.deny` rules. `planner` has no hook because it pushes and opens PRs, but only after the user agrees. Edit the patterns in `scripts/agent-guards/gen.py`, then run `python3 scripts/agent-guards/gen.py && bash scripts/agent-guards/test.sh`.
 
+### Cost guards
+
+Telling the main model to delegate is a suggestion; it still reads a 4,000-line file itself when that is the shortest path. The `cost-guards` plugin (`plugins/cost-guards/`) turns the two most expensive habits into blocked calls with a redirect:
+
+| Hook | On | Does |
+|------|----|------|
+| read guard | `Read`, `Bash` | Denies a whole-file read of a text file over 350 lines in the main session, and `cat`, `less`, `more`, `bat`, `nl` of one when the output is not piped onward. The reason tells the model to `Grep` and read with `offset`/`limit`, or send the `scout`. Subagents pass, so the scout can do the reading. |
+| spawn guard | `Agent` | Denies a spawn that would inherit the main model (no `model`, and the subagent type does not pin one). Asks you before a spawn on `opus` or `fable`. |
+
+Set `AI_TOOLBOX_READ_LINES` to change the threshold, or `AI_TOOLBOX_READ_GUARD=off` / `AI_TOOLBOX_SPAWN_GUARD=off` to turn a guard off. Both hooks fail open: an error allows the call, because they guard cost, not safety. They are not a fan-out limit; that stays an instruction in `delegation` (3 to 5 helpers at once), because a hook can't see how many helpers are still running. `/session-check` reports whether the plugin is enabled. Tests: `python3 plugins/cost-guards/tests/test.py`.
+
+The guards save tokens on bulk reads and on helpers that would otherwise run on the top model; they don't cut the cost of the work the main model still has to do. No benchmark in this repo yet measures the saving.
+
 ## Structure
 
 ```
@@ -170,8 +192,11 @@ The hooks are a seatbelt for mistakes, not a sandbox. The real boundary is still
     ├── planning/        product-research, design-research, grilling, grill-with-docs,
     │                    domain-modeling, questionnaire, codebase-design,
     │                    architecture-review, figma-design, spec, planner (+ RUN-PROJECT.md, RUN-WORKSPACE.md)
-    └── implementation/  the six personas, five reference skills, deep-review, resolve-merge-conflicts
+    └── implementation/  the six personas, five reference skills (each SKILL.md plus references/),
+                         deep-review, resolve-merge-conflicts
 research/                decisions and surveys about this repo (ADR-001, ADR-002, ADR-003)
+plugins/cost-guards/     Claude Code plugin: read and spawn guard hooks, with tests
+.claude-plugin/          marketplace.json, so the plugin installs from this repo
 scripts/                 check-skills.py (discovery and references), agent-guards/ (hook generator and tests)
 THIRD_PARTY_NOTICES.md   MIT notices for adapted skills
 ```

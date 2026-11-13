@@ -29,6 +29,7 @@ It checks, in order:
 | orca | `orca status`, which Orca workspace this folder is, bundled `orchestration` and `orca-cli` skills present |
 | tools | node, npx, bun |
 | skills | project skills whose name a global skill hides |
+| guards | the `cost-guards` plugin is enabled, and `scout` and `runner` carry their guard hooks |
 
 ## Report
 

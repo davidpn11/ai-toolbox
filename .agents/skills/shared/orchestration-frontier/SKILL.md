@@ -16,6 +16,8 @@ The rules are in the `delegation` skill: call the Skill tool with "delegation" n
 3. **Check everything that comes back.** Open the cited lines or have a `runner` rerun the check before you claim done.
 4. **Report cost.** End each task with one line: how many helper runs at which tiers, and what you kept ("8 helper runs: 5 fast, 3 standard; review and decisions kept here").
 
+**Enforcement.** This mode is instructions. The `cost-guards` Claude Code plugin catches the two costliest mistakes in any session: it blocks whole reads of files over 350 lines (send a `scout`) and Agent spawns that would inherit your model. If `session-check` shows it missing, tell the user once.
+
 With other skills: under `planner`, tasks already carry tiers, and this mode covers everything around the plan (investigation, reviews, checks). Under `lifecycle`, research fan-out is already on cheap tiers.
 
 ## Attribution
