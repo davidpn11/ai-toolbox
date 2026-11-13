@@ -43,7 +43,15 @@ Each specialist is a skill and a Claude Code subagent of the same name. In a mon
 
 ## 1. Plan
 
-Write `plan.yaml` with `PLAN.md` from `doc-templates`. Plan against the code as it is: check manifests and layout yourself or with a `scout` (`delegation`). Ask at most one round of questions, in the `grilling` format.
+Write `plan.yaml` with `PLAN.md` from `doc-templates`. Ask at most one round of questions, in the `grilling` format.
+
+**Gather facts with helpers, not by reading everything yourself.** In one turn, launch what the plan needs (roles and tiers from `delegation`):
+
+- a `scout` per question about the code as it is: manifests and layout, the call sites and tests each slice touches, existing patterns to copy;
+- the `research` skill per question outside the repo;
+- a `runner` for the verify commands, once, so you know the baseline is green before any task changes it.
+
+Open the cited lines for every fact a task's description will rely on. A plan built on a wrong scout answer fails in every task that inherits it.
 
 **Slice vertically.** Each slice is a tracer bullet: a narrow but complete path through every layer it needs (schema, API, UI, tests), demoable or verifiable on its own. Prefactoring comes first. Wide mechanical refactors are the exception: expand, migrate in batches, contract, each its own slice.
 
@@ -51,7 +59,16 @@ Write `plan.yaml` with `PLAN.md` from `doc-templates`. Plan against the code as 
 
 - Title by deliverable ("Search API returns paged results"), not by code.
 - Every task gets acceptance criteria, verification commands, and `context_files`.
-- `agent` from the roster. `tier`: `standard` for well-specified implementation, `fast` for mechanical work with exact instructions, `deep` only where design judgment is needed.
+- `agent` from the roster, and a `tier` (next paragraph).
+
+**Choose the tier per task.** Use the signal table in `delegation` section 2: a task gets the lowest tier whose signals all hold.
+
+- **Planning buys cheaper execution.** The more exact a task's description (the files, the contract it fulfils, the pattern to copy, the command that proves it), the lower the tier it can run on. Spend tokens here so the many tasks run on `fast` and `standard`.
+- **`deep` is a planning smell.** A task needs it only when it still holds an unsettled decision. Settle that decision in the spec or a `codebase-design` rationale, or split the task so only the judgment part stays `deep` and the rest drops to `standard`.
+- **Risk sets a floor.** Auth, payments, secrets, migrations, and public contracts: at least `standard`, reviewed on `deep`.
+- **Tests and verification** are `standard` (writing tests) and `fast` (running them, via the `runner`).
+
+The tier is set on every Child's spawn; a Child never inherits the expensive model. On failure the tier rises one step (`delegation` section 2), and it never drops.
 
 **Workspace mode adds three fields:**
 
@@ -76,11 +93,12 @@ Load the file for your mode and follow it:
 - Project mode: [RUN-PROJECT.md](RUN-PROJECT.md). Children are subagents, one per task.
 - Workspace mode: [RUN-WORKSPACE.md](RUN-WORKSPACE.md). Children are Orca Workers, one per task, each in its own worktree of its repo; one PR per repo.
 
-Both use the brief format and response contract from `delegation`, check every claimed pass with the `runner`, update `plan.yaml` after every task and wave, and end with `deep-review` and the security wave.
+Both use the brief format, safety rules, and response contract from `delegation`, give each Child a `May edit` scope of its task's files, check every claimed pass with the `runner`, update `plan.yaml` after every task and wave, and end with `deep-review` and the security wave.
 
 ## Directives
 
 - Work through the plan only. A trivial request still gets a minimal plan.
+- Nothing leaves the machine without the user: ask before pushing a branch or opening a PR, and never merge.
 - Keep the user conversation here. Children never ask the user; their questions come back to you as `escalate` (or an Orca question), and only what the user alone can answer reaches them.
 - Announce in one or two lines: phase start, wave start and end, failures, completion.
 - Under `/orchestration-frontier`, keep its cost rules too: the cheapest tier that fits each task, and say at the end how much was delegated.

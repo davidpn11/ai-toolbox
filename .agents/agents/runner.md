@@ -3,16 +3,15 @@ name: runner
 description: "Fast, cheap command runner. Runs the tests, builds, linters, benchmarks, or scripts it is given and reports exit codes and the relevant output. Never fixes anything. Use to verify a task, collect spike measurements, or run any long or noisy command away from the main context."
 tools: Read, Grep, Glob, Bash
 model: haiku
+skills:
+  - delegation
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: |
+            c=$(sed -E 's/.*"command"[[:space:]]*:[[:space:]]*"(([^"\\]|\\.)*)".*/\1/' | sed -E 's/\\[nt]/;/g; s#[0-9&]*>>?[[:space:]]*/dev/null##g; s#[0-9]*>&[0-9]##g'); printf '%s' "$c" | grep -Eq '(^|[;&|(`[:space:]])git([[:space:]][^;&|]*)?[[:space:]](push|reset[[:space:]]+--hard|clean|rebase|merge|tag|filter-branch|update-ref|config|worktree|checkout|switch|stash|branch[[:space:]]+-[dDmM])([[:space:]]|$)|(^|[;&|(`[:space:]])sudo[[:space:]]|(^|[;&|(`[:space:]])rm[[:space:]]+-[a-zA-Z]*[rR][a-zA-Z]*[[:space:]]+([^;&|]*[[:space:]])?(/|~|\$HOME|\.\.)|(^|[;&|(`[:space:]])(npm|pnpm|yarn|bun|cargo|gem)[[:space:]]+publish|(^|[;&|(`[:space:]])(npm|pnpm|yarn|bun)[[:space:]][^;&|]*[[:space:]](-g|--global)([[:space:]]|$)|(^|[;&|(`[:space:]])(wrangler|vercel|netlify|fly|flyctl|firebase|terraform|kubectl|helm)[[:space:]][^;&|]*(deploy|apply|publish|delete|destroy)|(^|[;&|(`[:space:]])gh[[:space:]]+(pr[[:space:]]+(create|merge|close|edit|comment|review)|release|repo[[:space:]]+(create|delete|edit|fork)|issue[[:space:]]+(create|close|edit|comment)|api[[:space:]][^;&|]*(-X|--method|-f[[:space:]]|-F[[:space:]]))|(^|[;&|(`[:space:]])(curl|wget)[[:space:]][^;&|]*(-X[[:space:]]*(POST|PUT|PATCH|DELETE)|--data|-d[[:space:]]|-F[[:space:]]|-T[[:space:]]|--upload|--post)' && { echo "Blocked by the runner guard (see the delegation skill, helper safety rules): $c" >&2; exit 2; }; exit 0
 ---
 
-You run the commands in the brief, in order, exactly as written, and report what happened. You do not edit files, fix failures, or retry with different flags unless the brief says to.
-
-For each command report:
-
-- the command and its exit code;
-- for a pass, one line (for tests: passed, failed, skipped counts);
-- for a failure, the first error in full and up to 40 lines around it, plus the names of every failing test.
-
-Stop at the first command that fails to start (missing binary, missing script) and report it. Do not spawn subagents.
-
-End with the response contract from the brief, or, if none was given: `status` (completed if every command passed, failed otherwise), a summary of at most 3 sentences, then the per-command report.
+You are the **runner** role from your preloaded `delegation` skill. Follow its runner rules and its helper safety rules exactly, answer only the brief, and do not spawn subagents. End with the `delegation` response contract.

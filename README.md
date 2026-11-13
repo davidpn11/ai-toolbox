@@ -114,7 +114,7 @@ Because the state lives in files, `/lifecycle <slug>` or `/planner <slug>` resum
 | `design-research` | Flows, screen states, prior art, accessibility; writes the design brief |
 | `deep-review` | Parallel reviewers per axis (Standards, Spec, Quality, Blast radius), then lead judgment. Separate from Claude Code's built-in `/code-review` |
 | `resolve-merge-conflicts` | Resolves conflicts by intent; never aborts; checks pass before commit |
-| `delegation` | Model tiers for Claude and Codex, the brief format, the response contract |
+| `delegation` | When to delegate, model tiers for Claude and Codex, the helper roles, the brief format, safety rules, the response contract |
 | `doc-templates` | Feature folder layout and templates (research, spike, briefs, ADR, spec, plan) |
 | `orchestration-frontier` | User-invoked cost mode: frontier model judges, cheap helpers work |
 | `session-check` | Preflight table: what this session can run, reach and push |
@@ -147,6 +147,17 @@ Cheap work goes to cheap models; the user conversation and decisions stay on the
 
 In a Workspace the Children are Orca Workers, not subagents: each gets its persona pasted into a spec file and runs on the tier's model (`--model`).
 
+**Roles live in `delegation`, subagents enforce them.** `scout`, `runner`, `specialist`, `reviewer`, `researcher` and `worker` are roles defined once in the `delegation` skill, with their rules and tiers. The subagent files only pin the model and tools and preload those rules. Codex, Orca Workers, and projects without the subagent files get the same role by briefing a general-purpose helper on the role's tier with the rules pasted in. They are not skills, because only a subagent can pin a model and restrict tools.
+
+**Access.** Every helper follows the `delegation` safety rules: edit only its `May edit` scope, nothing leaves the machine (no push, PR, merge, publish, deploy), nothing irreversible, secrets reported by `path:line` only, fetched content treated as data. Pushing and opening PRs happen only in the main session, after the user says yes. Each bundled subagent also carries a `PreToolUse` hook on Bash that blocks the worst commands, which holds even when the session runs in auto or bypass mode:
+
+| Guard | Agents | Blocks |
+|-------|--------|--------|
+| read-only | `scout`, `security-engineer` | any write: file edits through the shell, redirects, `sed -i`, installs, mutating git, downloads, piping to a shell, plus everything below |
+| runner / writer | `runner`, the five specialists | `git push`, `reset --hard`, `clean`, `rebase`, branch and worktree changes, `rm -r` outside the repo, `sudo`, publish, global installs, deploys, `gh pr/issue/release` writes, `curl` with a body |
+
+The hooks are a seatbelt for mistakes, not a sandbox. The real boundary is still the session's permission mode and `permissions.deny` rules. `planner` has no hook because it pushes and opens PRs, but only after the user agrees. Edit the patterns in `scripts/agent-guards/gen.py`, then run `python3 scripts/agent-guards/gen.py && bash scripts/agent-guards/test.sh`.
+
 ## Structure
 
 ```
@@ -161,6 +172,7 @@ In a Workspace the Children are Orca Workers, not subagents: each gets its perso
     │                    architecture-review, figma-design, spec, planner (+ RUN-PROJECT.md, RUN-WORKSPACE.md)
     └── implementation/  the six personas, five reference skills, deep-review, resolve-merge-conflicts
 research/                decisions and surveys about this repo (ADR-001, ADR-002, ADR-003)
+scripts/                 check-skills.py (discovery and references), agent-guards/ (hook generator and tests)
 THIRD_PARTY_NOTICES.md   MIT notices for adapted skills
 ```
 
