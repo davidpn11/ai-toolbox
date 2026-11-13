@@ -1,9 +1,9 @@
 ---
-name: code-review
-description: "Review the changes since a fixed point (commit, branch, tag, or merge-base) along separate axes: Standards (repo conventions plus a code-smell baseline), Spec (does it do what the issue asked), and optionally Quality (structural simplification) and Blast radius (what it breaks elsewhere). Runs each axis in a parallel read-only sub-agent, then applies lead judgment into Act on / Consider / Noted / Dismissed. Use when the user wants to review a branch, a PR, work-in-progress changes, or asks to 'review since X'."
+name: deep-review
+description: "Review the changes since a fixed point (commit, branch, tag, or merge-base) along separate axes: Standards (repo conventions plus a code-smell baseline), Spec (does it do what the issue asked), and optionally Quality (structural simplification) and Blast radius (what it breaks elsewhere). Runs each axis in a parallel read-only sub-agent, then applies lead judgment into Act on / Consider / Noted / Dismissed. Use when the user wants a deep review of a branch, a PR, work-in-progress changes, or asks to 'review since X'; the planner runs it after every build. Claude Code's built-in /code-review is a separate command."
 ---
 
-# Code review
+# Deep review
 
 Two things make this review different from reading the diff yourself. The axes are kept separate so one cannot mask another, and the findings are filtered by a lead who has context the reviewers lack. The deliverable is a verdict. Do NOT auto-apply changes.
 
@@ -56,7 +56,7 @@ One read-only sub-agent per axis, all launched in one turn, on the standard tier
 - **Quality**: the quality lens pasted in full, and the instruction: "Prioritise structural regressions and missed simplifications first. A few high-conviction findings over a long list of nits. Under 400 words."
 - **Blast radius**: the blast-radius brief pasted in full.
 
-Every brief ends with this line, verbatim: "Do not invoke `/code-review` or spawn additional agents: perform this review directly."
+Every brief ends with this line, verbatim: "Do not invoke `/deep-review` or `/code-review`, or spawn additional agents: perform this review directly."
 
 ### 6. Aggregate per axis
 

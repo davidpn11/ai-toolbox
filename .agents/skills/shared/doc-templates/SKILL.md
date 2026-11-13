@@ -55,5 +55,5 @@ Standalone work with no feature (a one-off research question) goes to `docs/rese
 | [QUESTIONNAIRE.md](QUESTIONNAIRE.md) | `questionnaire` | the recipient, then `grilling` |
 | [ADR.md](ADR.md) | `domain-modeling` | every later session |
 | [RATIONALE.md](RATIONALE.md) | `codebase-design` | `spec`, implementers |
-| [SPEC.md](SPEC.md) | `spec` | `planner`, `code-review` (Spec axis) |
-| [PLAN.md](PLAN.md) | `planner` | `architect` |
+| [SPEC.md](SPEC.md) | `spec` | `planner`, `deep-review` (Spec axis) |
+| [PLAN.md](PLAN.md) | `planner` | `planner` (runs it) |

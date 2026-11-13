@@ -32,4 +32,4 @@ Any safety fact you can't get to step 4, say so. Don't write it up as settled. S
 - **Cleared.** What you checked and why it's fine.
 - **Before you merge.** The cheapest test or repro that catches the real bug, including the script you wrote.
 
-Do not invoke `/code-review` or spawn additional agents: perform this review directly.
+Do not invoke `/deep-review` or `/code-review`, or spawn additional agents: perform this review directly.
