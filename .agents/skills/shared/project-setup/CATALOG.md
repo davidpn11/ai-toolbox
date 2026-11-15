@@ -30,6 +30,7 @@ The one list of every ai-toolbox skill and where it belongs. `project-setup` rea
 | `doc-templates` | Feature folder layout and document templates |
 | `orchestration-frontier` | User-invoked: expensive model judges, cheap helpers work |
 | `session-check` | Preflight: what this session can run, reach and push |
+| `opencode-session` | Run opencode as a child Orca session, never headless |
 | `project-setup` | This wizard |
 
 Global subagents (Claude Code, `~/.claude/agents/`): `scout`, `runner`.
