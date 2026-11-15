@@ -38,7 +38,7 @@ npx skills add davidpn11/ai-toolbox -g --agent claude-code --agent codex -y \
   --skill grilling --skill grill-with-docs --skill domain-modeling --skill questionnaire \
   --skill codebase-design --skill architecture-review --skill product-research --skill design-research \
   --skill deep-review --skill resolve-merge-conflicts --skill delegation --skill doc-templates \
-  --skill orchestration-frontier --skill session-check --skill project-setup
+  --skill orchestration-frontier --skill session-check --skill opencode-session --skill project-setup
 ```
 
 Global subagents for Claude Code (`scout` and `runner`, used by investigation, spike and session-check):
